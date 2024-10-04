@@ -16,7 +16,7 @@
             {{ errorMessageDB = $page.props.flash.error }}
         </div>
         <div class="flex justify-between items-center">
-            <span class="text-[20px] font-bold text-gray-500">Announcements </span> 
+            <span class="text-[20px] font-bold text-gray-500">Announcements test git</span> 
             <button @click="handleNewButtonClicked" type='button' class="btn-primary py-2 px-6 hover:cursor-pointer">+ New</button>
         </div>
         <div>
