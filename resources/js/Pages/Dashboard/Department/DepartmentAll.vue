@@ -34,7 +34,14 @@
         
         <div v-if="$page.props.flash.success" >{{ successMessage($page.props.flash.success) }} </div>
         <div v-if="$page.props.flash.error" >{{ errorMessage($page.props.flash.error) }} </div>
-        
+        <div class="flex justify-end pb-2 items-center gap-2">
+            Items / Page
+            <div>
+                <select v-model="prefItemsPerPage" class="rounded hover:cursor-pointer">
+                    <option v-for="(num, index) in itemsPerPageCount" :key="index">{{ num }}</option>
+                </select>
+            </div>
+        </div>
         <!--TABLE--> 
         <div>
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -152,8 +159,13 @@ const data = defineProps({
 
 const visible = ref(false);
 const searchField = ref('')
-const itemsPerPage = 5 // Number of items to display per page
+const itemsPerPage = ref(5) // Number of items to display per page
 const currentPage = ref(1)
+
+const prefItemsPerPage = ref(5)
+watch(prefItemsPerPage, (val)=>{
+    itemsPerPage.value = val
+})
 
 const filteredData = computed(() => {
     const searchTerm = searchField.value.toLowerCase().trim()
@@ -163,15 +175,15 @@ const filteredData = computed(() => {
     return data.departments.filter(dep => dep.name.toLowerCase().includes(searchTerm))
 })
 
-const totalPages = computed(() => Math.ceil(filteredData.value.length / itemsPerPage))
+const totalPages = computed(() => Math.ceil(filteredData.value.length / itemsPerPage.value))
 
 const paginatedData = computed(() => {
     if(searchField.value)
     {
         currentPage.value = 1
     }
-    const startIndex = (currentPage.value - 1) * itemsPerPage
-    const endIndex = startIndex + itemsPerPage
+    const startIndex = (currentPage.value - 1) * itemsPerPage.value
+    const endIndex = startIndex + itemsPerPage.value
     return filteredData.value.slice(startIndex, endIndex)
 })
 
@@ -286,4 +298,9 @@ function prevPage() {
         updateForm.put(route('department.update'));
         updateModal.value = false;
     } 
+
+    const itemsPerPageCount = ref([
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+    ])
+
 </script>

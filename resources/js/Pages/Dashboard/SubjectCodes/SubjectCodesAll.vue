@@ -11,6 +11,14 @@
         </div>
         <div v-if="$page.props.flash.success" >{{ successMessage($page.props.flash.success) }} </div>
         <div v-if="$page.props.flash.error" >{{ errorMessage($page.props.flash.error) }} </div>
+        <div class="flex justify-end pb-2 items-center gap-2">
+            Items / Page
+            <div>
+                <select v-model="prefItemsPerPage" class="rounded hover:cursor-pointer">
+                    <option v-for="(num, index) in itemsPerPageCount" :key="index">{{ num }}</option>
+                </select>
+            </div>
+        </div>
         <!--TABLE--> 
         <div>
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -77,7 +85,7 @@
 <script setup>
 import DashboardLayout from '../DashboardLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
-import {ref,computed} from 'vue'
+import {ref,computed, watch} from 'vue'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 
 
@@ -88,6 +96,11 @@ const data = defineProps({
 const searchField = ref('')
 const itemsPerPage = ref(5) // Number of items to display per page
 const currentPage = ref(1)
+
+const prefItemsPerPage = ref(5)
+watch(prefItemsPerPage,(val)=>{
+    itemsPerPage.value = prefItemsPerPage.value
+})
 
 const filteredData = computed(() => {
     let searchTerm = searchField.value.toLowerCase().trim()
@@ -192,5 +205,9 @@ const deleteConfirmation = (codeId)=>
             }
         })
     }
+
+    const itemsPerPageCount = ref([
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+    ])
 </script>
 

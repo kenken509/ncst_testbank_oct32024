@@ -525,15 +525,7 @@ const deleteConfirmation = (userId)=>
         })
     }
 
-    function validateInputItemsPerPage(input)
-    {
-        // Ensure the input is a number and within the specified range
-        if (input.value < 1) {
-            input.value = 1; // Set to minimum
-        } else if (input.value > 5) {
-            input.value = 5; // Set to maximum
-        }
-    }
+   
 
     const itemsPerPageCount = ref([
         1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
