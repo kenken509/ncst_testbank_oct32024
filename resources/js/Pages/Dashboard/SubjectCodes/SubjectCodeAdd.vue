@@ -98,7 +98,7 @@ watch(selectedDepartment,(val)=>{
 })
 
 const validator = ()=>{
-    if(form.description.length > 50)
+    if(form.description.length > 70)
     {
         
         descriptionLengthValidator.value = "Description could not exceed 50 characters."

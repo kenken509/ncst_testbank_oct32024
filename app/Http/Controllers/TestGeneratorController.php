@@ -285,7 +285,7 @@ class TestGeneratorController extends Controller
         
         //$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
         $pdf->setFontSubsetting(true);
-        $pdf->SetFont('helvetica', '', 12); // <<<<<<<<<<<<<<<<<here 1
+        $pdf->SetFont('helvetica', '', 8); // <<<<<<<<<<<<<<<<<here 1 // font size 12
 
         $pdf->AddPage();
 
@@ -519,7 +519,7 @@ class TestGeneratorController extends Controller
         if($problem_set)
         {
             $pdf->SetX(10);
-            $pdf->SetFont('helvetica', 'B', 12);
+            $pdf->SetFont('helvetica', 'B', 8); // font size 12
             
             // $pdf->cell(0,5,'Problem Set',0,0,'L',false,'');
             // $pdf->ln();
@@ -568,7 +568,7 @@ class TestGeneratorController extends Controller
         
         $pdf->SetAutoPageBreak(true, 10);
         $pdf->setFontSubsetting(true);
-        $pdf->SetFont('helvetica', '', 12);
+        $pdf->SetFont('helvetica', '', 8);
 
         $pdf->AddPage();
 
