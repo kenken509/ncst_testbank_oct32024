@@ -74,7 +74,9 @@ class UserManagementController extends Controller
         }
         
        
-        return redirect()->route('users.show')->with('success', 'Successfully created new user');
+        //return redirect()->route('users.show')->with('success', 'Successfully created new user');
+
+        return redirect()->back()->with('success', 'Successfully created new user');
     }
 
     public function updateUserShow($id)

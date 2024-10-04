@@ -27,7 +27,8 @@ class DatabaseSeeder extends Seeder
             SubjectCodeSeeder::class,
             QuestionSeeder::class,
             OptionSeeder::class,
-
+            DefaultPasswordSeeder::class,
+            
             // SubjectSeeder::class,
             // InstructorSeeder::class,
             // SectionSeeder::class,

@@ -12,9 +12,16 @@
         <div v-if="$page.props.flash.success" >{{ successMessage($page.props.flash.success) }} </div>
         <div v-if="$page.props.flash.error" >{{ errorMessage($page.props.flash.error) }} </div>
         <div v-if="addNewUserForm.errors.email">{{errorMessage(addNewUserForm.errors.email)}}</div>
-        
-        <div class="w-full flex justify-center">
-            <form class="w-full md:w-[60%] border border-gray-500 p-5 rounded-md shadow-md md:mt-[100px]" >
+       
+        <div class="w-full pt-20 flex flex-col justify-center items-center">
+            <!-- <div v-if="$page.props.flash.success">
+                 <span class="text-green-500">
+                    {{ $page.props.flash.success }} 
+                    {{ clearForm ()}}
+                 </span>
+                 
+            </div> -->
+            <form class="w-full md:w-[60%] border border-gray-500 p-5 rounded-md shadow-md " >
                 <div class="flex items-center justify-between mb-6 border-b-2">
                   <span class=" font-semibold text-lg text-gray-500">User Information</span> 
                   <div class="flex space-x-2 items-center">
@@ -91,13 +98,14 @@
 </template>
 
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import DashboardLayout from '../DashboardLayout.vue';
 import {ref, watch} from 'vue'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 
 
 const searchField = ref('')
+
 
 const data = defineProps({
     departments:Array,
@@ -111,6 +119,8 @@ const addNewUserForm = useForm({
     department:'',
     division_id:'',
 })
+
+
 
 
 
@@ -268,8 +278,7 @@ if(addUserRole.value === 'faculty')
         addNewUserForm.department = addUserDepartment.value.id;
         addNewUserForm.division_id = addUserDivision.value.id;
         addNewUserForm.post(route('user.store'));
-        
-        
+          
     }
 
 }
@@ -305,6 +314,7 @@ function successMessage(message)
         })
     }
 
+    
     // edit password logic  ***************************************************
     const editPasswordModalOpen = ref(false);
     const inputPassword = ref('');
@@ -359,6 +369,8 @@ function successMessage(message)
   
     return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar;
   }
+ 
+  
 
   
 </script>
