@@ -72,13 +72,13 @@
                         </span>
                     </div>
                     
-                    <div class="col-span-6 w-full" :class="{'col-span-8':!isAdminOrCoAdmin, 'col-span-6':isAdminOrCoAdmin}" >
+                    <div class="col-span-6 w-full"  >
                         <input type="text" :value="selectedSubjectCode.description" class="w-full bg-gray-100 rounded-md" disabled />
                         <span class="col-span-1">
                         </span>
                     </div>
-                    <div class=" flex w-full gap-2 " :class="{'col-span-1':!isAdminOrCoAdmin, 'col-span-3':isAdminOrCoAdmin }"><!--andito ako 1-->
-                        <button @click="handleProblemSetButtonClicked" v-if="user.role === 'admin'" type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
+                    <div class=" flex w-full gap-2 col-span-3" ><!--andito ako 1-->
+                        <button @click="handleProblemSetButtonClicked"  type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
                         <button @click="handleAddQuestionModal" type="button" class="btn-primary p-2 w-full">+ New</button>
                     </div>
                     
@@ -153,7 +153,7 @@
                 <div class=" items-center mb-2 gap-2">
                     
                     <div class=" flex flex-col w-full " >
-                        <button @click="handleProblemSetButtonClicked" v-if="user.role === 'admin'" type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
+                        <button @click="handleProblemSetButtonClicked" type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
                         <button @click="handleAddQuestionModal" type="button" class="btn-primary p-2 w-full">+ New</button>
                     </div>
                     
