@@ -76,9 +76,12 @@
                 <div class="mt-4">
                     <button @click="submitNewUser" type="button" :disabled="addNewUserForm.processing" class="w-full btn-primary " >Save</button>
                 </div>
+                <div>
+                    <button type="button" class="w-full btn-primary" @click="handleImportExcelModalOpen">Import Excel File</button>
+                </div>
             </form>
            <!-- email: {{ addNewUserForm.email }} || name: {{ addNewUserForm.name }} || role: {{ addUserRole }} || department: {{ addUserDepartment.id }} || division {{ addUserDivision.id }} -->
-            
+          
         </div>    
         
         <Dialog v-model:visible="editPasswordModalOpen" modal  :style="{ width: '50rem' }">
@@ -93,6 +96,30 @@
             <div class="mt-4">
                 <button @click="updateNewDefaultPassword" type="button" :disabled="addNewUserForm.processing" class="w-full btn-primary " >Save</button>
             </div>
+        </Dialog>
+
+
+        <Dialog v-model:visible="importModalOpen" modal header="Import Excel File"  :style="{ width: '50rem' }">
+            
+            <div>
+                <hr/>
+            </div>
+            <div v-if="handleImportExcelError" class="pt-2" >
+                <span class="text-red-500">{{ handleImportExcelError }}</span>
+            </div>
+            <div class="mt-4">
+                <form @submit.prevent="submitImportExcel">
+                    <div class="pb-2">
+                        <input  type="file" ref="fileInput" accept=".xls, .xlsx" @change="handleImportExcelFileChange"/>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="w-full btn-primary" > Import </button>
+                    </div>
+                </form>
+            </div>
+                
+            
         </Dialog>
     </DashboardLayout>
 </template>
@@ -119,7 +146,6 @@ const addNewUserForm = useForm({
     department:'',
     division_id:'',
 })
-
 
 
 
@@ -370,7 +396,46 @@ function successMessage(message)
     return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar;
   }
  
-  
+  const importModalOpen = ref(false)
+  const handleImportExcelModalOpen = ()=>{
+    importModalOpen.value = !importModalOpen.value
+  }
 
+const handleImportExcelError = ref('')
+const fileInput = ref(null); // Reference to the file input
+const importExcelForm = useForm({
+    file:null,
+})
+const handleImportExcelFileChange = (event)=> 
+{
+    const file = event.target.files[0]; // Get the first file
+    handleImportExcelError.value = ''; // Reset error message
+    
+    
+    if (file) 
+    {
+        let validExtensions = ['xls', 'xlsx'];
+        let fileExtension = file.name.split('.').pop().toLowerCase();
+
+         // Check if the file extension is valid
+        if (!validExtensions.includes(fileExtension)) 
+        {
+            handleImportExcelError.value = 'Please upload a valid Excel file (.xls or .xlsx).';
+            fileInput.value.value = ''; // Reset the input
+            return;
+        }
+
+        
+    }
+   
+    importExcelForm.file = file
+
+    //importExcelForm.post('user.import.excel')
+
+}
+
+const submitImportExcel = ()=> {
+    importExcelForm.post(route('user.import.excel'))
+}
   
 </script>

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserManagementController extends Controller
 {
@@ -163,5 +164,25 @@ class UserManagementController extends Controller
 
     }
 
-    
+    // excel import logic
+
+    public function storeExcelUsers(Request $request){
+        // echo the data from $request->file
+
+         // Validate the request
+         $request->validate([
+            'file' => 'required|mimes:xls,xlsx',
+        ]);
+
+         // Get the uploaded file
+         $file = $request->file('file');
+
+         // Load the Excel file and read its contents
+         $data = Excel::toArray([], $file);
+ 
+         // Dump and die to output the data
+         dd($data);
+
+        
+    }
 }

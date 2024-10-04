@@ -179,7 +179,7 @@
                             
 
                                 
-                                <th  v-if="isAdmin" scope="col" class="flex justify-center px-6 py-3">Action</th>
+                                <th  v-if="isAdmin || isDepHead" scope="col" class="flex justify-center px-6 py-3">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -209,7 +209,7 @@
                                 </th>
                             
                             
-                                <td  v-if="$page.props.user.role === 'admin'" class="px-6 py-4 text-center ">
+                                <td  v-if="$page.props.user.role === 'admin' || $page.props.user.role === 'department head'" class="px-6 py-4 text-center ">
                                     <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
                                         <button @click="showQuestionInfoModal(question)" class="btn-primary p-2">Info</button>
                                         <button  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>
@@ -279,7 +279,7 @@
                                 </th>
                             
                             
-                                <td  v-if="$page.props.user.role === 'admin'" class="px-6 py-4 text-center ">
+                                <td  v-if="$page.props.user.role === 'admin' || $page.props.user.role === 'department head'" class="px-6 py-4 text-center ">
                                     <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
                                         <button @click="showQuestionInfoModal(question)" class="btn-primary p-2">Info</button>
                                         <button  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>
@@ -705,15 +705,18 @@ const data = defineProps({
 
 const user = usePage().props.user
 const isAdmin = ref(false);
-
+const isDepHead = ref(false);
 
 onMounted(()=>{ // andito ako mounted
-    if(user.role === 'admin')
+    if(user.role === 'admin' )
     {
         isAdmin.value = true;
     }
     
-    
+    if(user.role === 'department head' )
+    {
+        isDepHead.value = true;
+    }
 
 
     successAlertCounter.value = 0 
