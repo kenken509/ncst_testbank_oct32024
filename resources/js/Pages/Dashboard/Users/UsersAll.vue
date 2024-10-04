@@ -29,6 +29,15 @@
          <!--TABLE-->
           
          <div>
+            <div class="flex justify-end pb-2 items-center gap-2">
+                Items / Page
+                <div>
+                    <select v-model="prefItemsPerPage" class="rounded hover:cursor-pointer">
+                        <option v-for="(num, index) in itemsPerPageCount" :key="index">{{ num }}</option>
+                    </select>
+                </div>
+            </div>
+           
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-200 uppercase bg-blue-900 dark:bg-gray-700 dark:text-gray-400">
@@ -89,7 +98,7 @@
             </button>
         </div>
 
-        
+      
 
         <!--add user modal-->
         <Dialog v-model:visible="addUserModalVisible" modal header="New User" :style="{ width: '60rem' }">
@@ -186,10 +195,13 @@ const filteredData = computed(()=>{// andito ako 1
             
 
 })
-
+const prefItemsPerPage = ref(5)
 const currentPage = ref(1)
 const itemsPerPage = ref(5)
 
+watch(prefItemsPerPage,(val)=>{
+    itemsPerPage.value = prefItemsPerPage.value
+})
 const paginatedData = computed(()=>{
     if(searchField.value)
     {
@@ -512,4 +524,18 @@ const deleteConfirmation = (userId)=>
             }
         })
     }
+
+    function validateInputItemsPerPage(input)
+    {
+        // Ensure the input is a number and within the specified range
+        if (input.value < 1) {
+            input.value = 1; // Set to minimum
+        } else if (input.value > 5) {
+            input.value = 5; // Set to maximum
+        }
+    }
+
+    const itemsPerPageCount = ref([
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+    ])
 </script>

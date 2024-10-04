@@ -20,6 +20,7 @@ import InputMask from 'primevue/inputmask';
 import Image from 'primevue/image';
 import FileUpload from 'primevue/fileupload';
 import ProgressSpinner from 'primevue/progressspinner';
+import InputNumber from 'primevue/inputnumber';
 
 
 
@@ -37,6 +38,7 @@ createInertiaApp({
       .component('Dialog',Dialog)
       .component('Button',Button)
       .component('InputText',InputText)
+      .component('InputNumber',InputNumber)
       .component('InputMask',InputMask)
       .component('Image', Image)
       .component('FileUpload',FileUpload)
