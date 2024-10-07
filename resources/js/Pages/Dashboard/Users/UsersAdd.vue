@@ -12,7 +12,7 @@
         <div v-if="$page.props.flash.success" >{{ successMessage($page.props.flash.success) }} </div>
         <div v-if="$page.props.flash.error" >{{ errorMessage($page.props.flash.error) }} </div>
         <div v-if="addNewUserForm.errors.email">{{errorMessage(addNewUserForm.errors.email)}}</div>
-       
+        
         <div class="w-full pt-20 flex flex-col justify-center items-center">
             <!-- <div v-if="$page.props.flash.success">
                  <span class="text-green-500">
@@ -107,7 +107,7 @@
             <div v-if="handleImportExcelError" class="pt-2" >
                 <span class="text-red-500">{{ handleImportExcelError }}</span>
             </div>
-            <div class="mt-4">
+            <div class="mt-4 relative">
                 <form @submit.prevent="submitImportExcel">
                     <div class="pb-2">
                         <input  type="file" ref="fileInput" accept=".xls, .xlsx" @change="handleImportExcelFileChange"/>
@@ -118,7 +118,7 @@
                     </div>
                 </form>
             </div>
-                
+            <ProgressSpinner v-if="isLoading"  class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2"  />
             
         </Dialog>
     </DashboardLayout>
@@ -433,9 +433,14 @@ const handleImportExcelFileChange = (event)=>
     //importExcelForm.post('user.import.excel')
 
 }
-
+const isLoading = ref(false)
 const submitImportExcel = ()=> {
-    importExcelForm.post(route('user.import.excel'))
+    isLoading.value = true
+    importExcelForm.post(route('user.import.excel'),{
+        onSuccess: ()=>{
+            isLoading.value = false;
+        }
+    })
 }
   
 </script>

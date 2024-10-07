@@ -175,7 +175,8 @@ class UserManagementController extends Controller
 
          // Load the Excel file and read its contents
          $data = Excel::toArray([], $file);
- 
+        
+         
          // Dump and die to output the data
         // dd($data[0]);
         //dd(count($data[0]));
