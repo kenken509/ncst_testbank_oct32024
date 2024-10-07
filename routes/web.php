@@ -13,6 +13,7 @@ use App\Http\Controllers\SubjectCodeController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\TestGeneratorController;
+use App\Http\Controllers\QuestionBackUpController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\DefaultPasswordController;
 
@@ -71,6 +72,7 @@ Route::controller(SubjectCodeController::class)->group(function(){
 });
 
 Route::controller(QuestionController::class)->group(function(){
+    
     Route::get('/test_bank/questions', 'showQuestions')->name('questions.show')->middleware('isFaculty');
     Route::delete('/test_bank/questions/delete/{id}', 'destroy')->name('questions.delete')->middleware('isAdminCoAdminDepHead');
     Route::get('/test_bank/questions/add', 'showAddQuestion')->name('question.add')->middleware('isFaculty');
@@ -79,6 +81,10 @@ Route::controller(QuestionController::class)->group(function(){
     Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show')->middleware('isAdminCoAdminDepHead');
     Route::post('/test_bank/question/update', 'update')->name('question.update')->middleware('isAdminCoAdminDepHead');
 
+});
+
+Route::controller(QuestionBackUpController::class)->group(function(){
+    Route::get('/test_bank/export-questions', 'export')->name('questions.export');
 });
 
 Route::controller(TestGeneratorController::class)->group(function(){

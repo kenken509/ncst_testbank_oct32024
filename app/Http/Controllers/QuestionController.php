@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Option;
 use App\Models\Question;
 use App\Models\ProblemSet;
 use App\Models\SubjectCode;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
+use App\Exports\QuestionsExport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class QuestionController extends Controller
 {
@@ -817,6 +821,16 @@ class QuestionController extends Controller
             }
             
         }
+    }
+
+
+   
+    
+   
+    public function export()
+    {
+        
+        return Excel::download(new QuestionsExport, 'question.xlsx');
     }
 
     

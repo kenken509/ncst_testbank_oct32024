@@ -328,15 +328,13 @@
                                     Questions
                                 </li>
                             </Link>
-                            <!-- <Link  :href="route('question.add')">
-                                <li @click="toggleBackground('questionBank2')" :class="{'bg-blue-900':clickedItem === 'questionBank2'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
-                                    <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                        <path fill-rule="evenodd" d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1a1 1 0 0 1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Add
+                     
+                            <a :href="route('questions.export')" target="_blank" rel="noopener noreferrer">
+                                <li @click="toggleBackground('questionBank1')" :class="{'bg-blue-900':clickedItem === 'questionBank1'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                    <i class="pi pi-cloud-download text-2xl"></i>
+                                    Back up 
                                 </li>
-                            </Link> -->
-                            
+                            </a>
                         </ul>
                 </div>
                 <!--question bank-->
