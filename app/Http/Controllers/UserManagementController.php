@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Division;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\DefaultPassword;
@@ -167,13 +169,7 @@ class UserManagementController extends Controller
     // excel import logic
 
     public function storeExcelUsers(Request $request){
-        // echo the data from $request->file
-
-         // Validate the request
-         $request->validate([
-            'file' => 'required|mimes:xls,xlsx',
-        ]);
-
+        
          // Get the uploaded file
          $file = $request->file('file');
 
@@ -181,37 +177,161 @@ class UserManagementController extends Controller
          $data = Excel::toArray([], $file);
  
          // Dump and die to output the data
-         dd($data);
-         
+        // dd($data[0]);
+        //dd(count($data[0]));
+        try
+        {
+            DB::beginTransaction();
+            foreach($data[0] as $index => $user )
+            {
+               $existingDepartments = Department::with('divisions')->get();
+               
+               //dd($existingDepartments);
+               //dd(count($existingDepartments[2]->divisions));
+   
+               if($index == 0)
+               {
+                   continue;
+                  
+               }
+   
+               //dd($user[0].' '.$user[1].' '.$user[2].' '.$user[3].' '.$user[4]);
+               
+   
+               if(strlen($user[0]) > 50 || $user[0] == '')
+               {
+                   return redirect()->back()->with('error', 'The name field is required and must not exceed 50 characters.');
+               }
+   
+               // $email = "test@example.com";
+   
+               if (!filter_var($user[1], FILTER_VALIDATE_EMAIL)) {
+   
+                   return redirect()->back()->with('error', "The email field is required and must be a valid email for each user.");
+               } 
+               
+               $existingRoles = ['admin', 'co-admin', 'department head', 'faculty'];
+   
+               if (!in_array(strtolower($user[2]), $existingRoles)) //strtolower($existingRoles)
+               {
+                   return redirect()->back()->with('error', 'User role is not valid. Valid roles: "admin, co-admin, department head, faculty"');
+               }
+   
+               
+               // departments and division logic
+               
+               $name = $user[0];
+               $email = $user[1];
+               $role = $user[2];
+               $userDepartmenId = '';
+               $userDivisionId = '';
+               
+               
+               if(strtolower($user[2] == 'department head') ) // dep head
+               {
+                   
+                   if(strtolower($user[3] == '' ))
+                   {
+                       return redirect()->back()->with('error', 'Department field is required for Dep Head or faculty');
+                   }
+   
+                   $userDepHeadDepartment = Department::whereRaw('LOWER(name) = ?', [strtolower($user[3])])->first();
+   
+                   if(!$userDepHeadDepartment)
+                   {
+                       return redirect()->back()->with('error', $user[3].' Department name do not exist');
+                   }
+   
+                   $userDepartmenId = $userDepHeadDepartment->id;
+                   $userDivisionId  = null;
+               }
+   
+   
+               if(strtolower($user[2] == 'faculty')) // faculty
+               {
+                   if(strtolower($user[3] == '' ))
+                   {
+                       return redirect()->back()->with('error', 'Department field is required for Dep Head or faculty');
+                   }
+   
+                   $userFacultyDepartment = Department::with('divisions')->whereRaw('LOWER(name) = ?', [strtolower($user[3])])->first();
+   
+                   if(!$userFacultyDepartment)
+                   {
+                       return redirect()->back()->with('error', $user[3].' Department do not exist');
+                   }
+                   $userDepartmenId = $userFacultyDepartment->id;
+                   //check if the department have divisions 
+                   $hasDivision = count($userFacultyDepartment->divisions);
 
-         
-        //    0 => array:5 [▼
-        //      0 => "name"
-        //      1 => "email"
-        //      2 => "role"
-        //      3 => "department_name"
-        //      4 => "division_name"
-        //    ]
-        //    1 => array:5 [▼
-        //      0 => "testName"
-        //      1 => "testmail001@gmail.com"
-        //      2 => "admin"
-        //      3 => null
-        //      4 => null
-        //    ]
-        //    2 => array:5 [▼
-        //      0 => "testname2"
-        //      1 => "testmail002@gmail.com"
-        //      2 => "faculty"
-        //      3 => "BUSINESS"
-        //      4 => "ACCOUNTANCY"
-        //    ]
-        //    3 => array:5 [▼
-        //      0 => "testname3"
-        //      1 => "testmail003@gmail.com"
-        //      2 => "department head"
-        //      3 => "CSD"
-        //      4 => null
+                   if($hasDivision == 0)
+                   {
+                        $userDivisionId = null;
+                   }  
+                   
+                   if($hasDivision != 0)  // if department has division, division field should be required
+                   {
+                      if(!$user[4])
+                      {
+                         return redirect()->back()->with('error','Division is required for '.$user[3].' department');
+                      }
+   
+                      $existingDivision = Division::whereRaw('Lower(name) = ?', [strtolower($user[4])])->first();
+   
+                      if(!$existingDivision)
+                      {
+                        return redirect()->back()->with('error', $user[4].' division do not exist');
+                      }
+   
+                      $userDivisionId = $existingDivision->id;
+                   }
+                  
+                                     
+               }
+   
+               // $name = $user[0];
+               // $email = $user[1];
+               // $role = $user[2];
+               // $userDepartmenId = '';
+               // $userDivisionId = '';
+               
+               //dd('name: '.$name.' >>email: '.$email.' >>role: '.$role.' >>department_id: '.$userDepartmenId.' >>division_id: '.$userDivisionId);
+               $pass = DefaultPassword::first();
+               $defPass = $pass->password;
+               $defaultPassword = Hash::make($defPass);
+   
+               $newUser                    = new User();
+               $newUser->name              = $name;
+               $newUser->email             = $email;
+               $newUser->password          = $defaultPassword;
+               $newUser->role              = $role;
+               if($role == 'admin' || $role == 'co-admin')
+               {
+                    $newUser->department_id     = null;
+                    $newUser->division_id       = null;
+               }
+               else
+               {
+                    $newUser->department_id     = $userDepartmenId;
+                    $newUser->division_id       = $userDivisionId;
+               }
+
+               $newUser->created_at = Carbon::now();
+               $newUser->save();
+ 
+            }
+            
+            DB::commit();
+            return redirect()->route('users.show')->with('success', 'Successfully created new Users');
+        } 
+        catch(Exception $e)
+        {
+            DB::rollback();
+            Log::error('error uploading excel users: '.$e->getMessage());
+
+            return redirect()->back()->with('error', 'Error excel upload.');
+        }
+        
         
     }
 }
