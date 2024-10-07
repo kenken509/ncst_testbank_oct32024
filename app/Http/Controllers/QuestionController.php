@@ -734,6 +734,7 @@ class QuestionController extends Controller
     }
     public function destroy($id)
     {
+        
         $questionToDelete = Question::findOrFail($id);
         $randomNumber = rand(1,10000000);
         $time = now();

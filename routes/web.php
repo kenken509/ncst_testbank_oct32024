@@ -72,12 +72,12 @@ Route::controller(SubjectCodeController::class)->group(function(){
 
 Route::controller(QuestionController::class)->group(function(){
     Route::get('/test_bank/questions', 'showQuestions')->name('questions.show')->middleware('isFaculty');
-    Route::delete('/test_bank/questions/delete/{id}', 'destroy')->name('questions.delete')->middleware('isAdmin');
+    Route::delete('/test_bank/questions/delete/{id}', 'destroy')->name('questions.delete')->middleware('isAdminCoAdminDepHead');
     Route::get('/test_bank/questions/add', 'showAddQuestion')->name('question.add')->middleware('isFaculty');
     Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store')->middleware('isFaculty');
     //Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store.modal');
-    Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show')->middleware('isAdmin');
-    Route::post('/test_bank/question/update', 'update')->name('question.update')->middleware('isAdmin');
+    Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show')->middleware('isAdminCoAdminDepHead');
+    Route::post('/test_bank/question/update', 'update')->name('question.update')->middleware('isAdminCoAdminDepHead');
 
 });
 

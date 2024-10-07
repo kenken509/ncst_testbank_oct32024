@@ -182,7 +182,36 @@ class UserManagementController extends Controller
  
          // Dump and die to output the data
          dd($data);
+         
 
+         
+        //    0 => array:5 [▼
+        //      0 => "name"
+        //      1 => "email"
+        //      2 => "role"
+        //      3 => "department_name"
+        //      4 => "division_name"
+        //    ]
+        //    1 => array:5 [▼
+        //      0 => "testName"
+        //      1 => "testmail001@gmail.com"
+        //      2 => "admin"
+        //      3 => null
+        //      4 => null
+        //    ]
+        //    2 => array:5 [▼
+        //      0 => "testname2"
+        //      1 => "testmail002@gmail.com"
+        //      2 => "faculty"
+        //      3 => "BUSINESS"
+        //      4 => "ACCOUNTANCY"
+        //    ]
+        //    3 => array:5 [▼
+        //      0 => "testname3"
+        //      1 => "testmail003@gmail.com"
+        //      2 => "department head"
+        //      3 => "CSD"
+        //      4 => null
         
     }
 }
