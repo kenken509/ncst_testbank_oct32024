@@ -85,6 +85,7 @@ Route::controller(QuestionController::class)->group(function(){
 
 Route::controller(QuestionBackUpController::class)->group(function(){
     Route::get('/test_bank/export-questions', 'export')->name('questions.export');
+    Route::post('/test_bank/import-questions', 'import')->name('questions.import');
 });
 
 Route::controller(TestGeneratorController::class)->group(function(){

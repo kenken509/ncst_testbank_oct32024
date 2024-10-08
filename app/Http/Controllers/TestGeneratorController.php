@@ -301,10 +301,11 @@ class TestGeneratorController extends Controller
             // if string length is more than pagewithd - padding - margins text should be justified
             $textOrientation = 'L';
             $stringLength = strlen($question->question);
-            if(strlen($question->question) > 60)
-            { 
-                $textOrientation = 'J';
-            }
+            
+            // if(strlen($question->question) > 60)
+            // { 
+            //     $textOrientation = 'J';
+            // }
 
             $pdf->MultiCell(0, 5, $number . '. ' . $question->question, 0, $textOrientation , false);
             

@@ -57,7 +57,7 @@ class QuestionsSheet implements FromCollection, WithMapping, WithHeadings, WithT
             'ID',
             'Question',
             'Type',
-            'Attached Image',
+            'Attached_Image',
             'Term',
             'Subject Code',
             'Author ID',

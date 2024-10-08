@@ -329,12 +329,19 @@
                                 </li>
                             </Link>
                      
-                            <a :href="route('questions.export')" target="_blank" rel="noopener noreferrer">
+                            <a v-if="user.role==='admin'" :href="route('questions.export')" target="_blank" rel="noopener noreferrer">
                                 <li @click="toggleBackground('questionBank1')" :class="{'bg-blue-900':clickedItem === 'questionBank1'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
-                                    <i class="pi pi-cloud-download text-2xl"></i>
-                                    Back up 
+                                    <i class="pi pi-file-export text-2xl"></i>
+                                    Export
                                 </li>
                             </a>
+                            <li v-if="user.role==='admin'" class="flex pl-10   items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                <button @click="handleopenExportModal">
+                                    <i class="pi pi-cloud-upload pr-1 text-2xl p"></i>
+                                    
+                                    Import 
+                                </button>
+                            </li>
                         </ul>
                 </div>
                 <!--question bank-->
@@ -477,6 +484,26 @@
             </div>
         </div>
 
+        <Dialog v-model:visible="openExportModal" modal header="Import Questions" :style="{ width: '25rem' }">
+            <div class="relative"><hr/></div>
+            <ProgressSpinner v-if="isLoading"  class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2"  />
+            <div v-if="handleImportQuestionsError" class="mt-2">
+                <span class="text-red-500 ">
+                    {{ handleImportQuestionsError }}
+                </span>
+            </div>
+            <form @submit.prevent="submitUserImport">
+                <div class="mt-2">
+                    <input type="file" ref="exportInputFile" accept=".xlsx, xls" @change="handleExportInputFileChange" required/>
+                </div>
+                <div class="py-4">
+                    <button   class="w-full bg-blue-900 p-2 rounded-md text-gray-100" type="submit" >Import</button> <!-- andito ako 2-->
+                </div>
+            </form>
+           
+        </Dialog>
+
+        
         <!-- <CustomModal :isOpen="customModalOpen" @close="closeModal">
             TEST Generator : {{testGenModalOpen}}
         </CustomModal> -->
@@ -485,7 +512,7 @@
 
 <script setup>
 import { computed, ref, onMounted } from 'vue';
-import { usePage, Link, router } from '@inertiajs/vue3';
+import { usePage, Link, router, useForm } from '@inertiajs/vue3';
 import CustomModal from '../Global Component/CustomModal.vue';
 import axios from 'axios';
 import { capitalizeFirstLetter } from './Composables/capitalizeFirstLetter';
@@ -664,4 +691,50 @@ const downloadBackup = () => {
   })
 
 };
+
+//export logic
+const isLoading = ref(false)
+const exportInputFile = ref(null);
+const openExportModal = ref(false);
+const handleImportQuestionsError = ref('');
+const importUserForm = useForm({
+    file:'',
+})
+
+const handleopenExportModal = ()=>{
+    openExportModal.value = !openExportModal.value
+    console.log(exportInputFile.value)
+}
+
+const handleExportInputFileChange = (event)=>{
+    const file = event.target.files[0];
+
+
+    if (file) 
+    {
+        let validExtensions = ['xls', 'xlsx'];
+        let fileExtension = file.name.split('.').pop().toLowerCase();
+
+         // Check if the file extension is valid
+        if (!validExtensions.includes(fileExtension)) 
+        {
+            handleImportQuestionsError.value = 'Please upload a valid Excel file (.xls or .xlsx).';
+            exportInputFile.value.value = ''; // Reset the input
+            return;
+        }
+
+        handleImportQuestionsError.value = '';
+        importUserForm.file = file;
+    }
+    
+}
+
+const submitUserImport = ()=>{
+    isLoading.value = true;
+    importUserForm.post(route('questions.import'),{
+        onSuccess: ()=>{
+            isLoading.value = false
+        }
+    })
+}
 </script>
