@@ -18,16 +18,16 @@ class OptionsImport implements ToModel, WithHeadingRow
 
        
                
-        // return Option::updateOrCreate(
-        //     ['id' => $row['id']],
-        //     [
-        //         'option' => $row['option'],
-        //         'question_id' => $row['question_id'],
-        //         'isCorrect' => $row['isCorrect'],
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ]
-        // );
+        return Option::updateOrCreate(
+            ['id' => $row['id']],
+            [
+                'option' => $row['option'],
+                'question_id' => $row['question_id'],
+                'isCorrect' => $row['iscorrect'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
                 
 
          

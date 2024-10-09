@@ -329,12 +329,16 @@
                                 </li>
                             </Link>
                      
-                            <a v-if="user.role==='admin'" :href="route('questions.export')" target="_blank" rel="noopener noreferrer">
+                            <!-- <a v-if="user.role==='admin'" :href="route('questions.export')" target="_blank" rel="noopener noreferrer">
                                 <li @click="toggleBackground('questionBank1')" :class="{'bg-blue-900':clickedItem === 'questionBank1'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                     <i class="pi pi-file-export text-2xl"></i>
                                     Export
                                 </li>
-                            </a>
+                            </a> -->
+                            <li @click="exportFiles"  class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                    <i class="pi pi-file-export text-2xl"></i>
+                                    Export
+                                </li>
                             <li v-if="user.role==='admin'" class="flex pl-10   items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                 <button @click="handleopenExportModal">
                                     <i class="pi pi-cloud-upload pr-1 text-2xl p"></i>
@@ -694,6 +698,33 @@ const downloadBackup = () => {
 
 //export logic
 const isLoading = ref(false)
+
+const exportFiles = async () => {
+  try {
+    const response = await axios.get(route('questions.export'));
+    const { excel_download_url, zip_download_url } = response.data;
+
+    // Trigger downloads for both files
+    downloadFile(excel_download_url);
+    downloadFile(zip_download_url);
+  } catch (error) {
+    console.error('Error exporting files:', error);
+    // Optionally show a user-friendly message
+  }
+};
+
+const downloadFile = (url) => {
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', '');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
+
+//import user logic
 const exportInputFile = ref(null);
 const openExportModal = ref(false);
 const handleImportQuestionsError = ref('');
@@ -701,12 +732,22 @@ const importUserForm = useForm({
     file:'',
 })
 
+
+const submitUserImport = ()=>{
+    isLoading.value = true;
+    importUserForm.post(route('questions.import'),{
+        onSuccess: ()=>{
+            isLoading.value = false
+        }
+    })
+}
+
 const handleopenExportModal = ()=>{
     openExportModal.value = !openExportModal.value
     console.log(exportInputFile.value)
 }
 
-const handleExportInputFileChange = (event)=>{
+const handleExportInputFileChange = (event)=>{ // change export to import
     const file = event.target.files[0];
 
 
@@ -727,14 +768,5 @@ const handleExportInputFileChange = (event)=>{
         importUserForm.file = file;
     }
     
-}
-
-const submitUserImport = ()=>{
-    isLoading.value = true;
-    importUserForm.post(route('questions.import'),{
-        onSuccess: ()=>{
-            isLoading.value = false
-        }
-    })
 }
 </script>

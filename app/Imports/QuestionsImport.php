@@ -27,34 +27,49 @@ class QuestionsImport implements ToModel, WithHeadingRow
         // Log the incoming row data for debugging
         Log::info('Processing Question Row: ', $row);
 
-        // Use 'Attached_Image' or 'attached_image' based on your Excel header
-        $imagePath = $row['attached_image'] ?? $row['Attached_Image'] ?? null;
+        // Get the image data from the row
+        $imageData = $row['attached_image'] ?? null; // This should contain the actual image
 
-        if ($imagePath) {
-            // Ensure you have the correct path to the images
-            $sourcePath = storage_path("app/public/Images/{$imagePath}");
+        $imagePath = null; // Initialize the image path
 
-            // Check if the source image exists before importing
-            if (file_exists($sourcePath)) {
+        if ($imageData) {
+            // Assuming the image data contains the file name at the beginning, like "filename:base64data"
+
+            Log::info('Raw Image Data: ', ['data' => $imageData]);
+            if (strpos($imageData, ':') !== false) {
+                list($imageFileName, $base64Data) = explode(':', $imageData, 2);
+                $imageFileName = trim($imageFileName); // Use the provided file name
+                $base64Data = trim($base64Data); // Get the base64 data
+
+                // Decode the image data
+                $imageData = base64_decode($base64Data);
+                if ($imageData === false) {
+                    Log::warning('Base64 decode failed for image data in row: ', $row);
+                    return null; // Skip this row if decoding fails
+                }
+
                 // Define the destination path in your public storage
-                $destinationPath = 'Images/' . basename($imagePath);
+                $destinationPath = 'Images/' . basename($imageFileName); // Use the provided file name
 
                 // Store the image in the public disk
-                Storage::disk('public')->putFileAs('Images', new File($sourcePath), basename($imagePath));
-                $imagePath = $destinationPath; // Store the destination path
+                Storage::disk('public')->put($destinationPath, $imageData);
+
+                // Set the path to be stored in the database
+                $imagePath = $destinationPath;
             } else {
-                Log::warning('Image does not exist at path: ' . $sourcePath);
-                $imagePath = null; // Reset if the image doesn't exist
+                Log::warning('Image data format is not valid in row: ', $row);
             }
+        } else {
+            Log::warning('No image data found in the row.');
         }
 
-        // Use the ID to find existing records or create a new one
+        // Continue with the rest of the logic for updating or creating a question
         return Question::updateOrCreate(
             ['id' => $row['id'] ?? null], // The field to check for existing record, handle null case
             [
                 'question' => $row['question'],
                 'type' => $row['type'] ?? null, // Handle potential missing 'type'
-                'attached_image' => $imagePath, // Store the path or null
+                'attached_image' => $imagePath, // Store the path
                 'term' => $row['term'] ?? null, // Handle potential missing 'term'
                 'subject_code_id' => $row['subject_code'] ?? null, // Handle potential missing 'subject_code'
                 'author_id' => $row['author_id'] ?? null, // Handle potential missing 'author_id'
@@ -64,4 +79,5 @@ class QuestionsImport implements ToModel, WithHeadingRow
             ]
         );
     }
+
 }

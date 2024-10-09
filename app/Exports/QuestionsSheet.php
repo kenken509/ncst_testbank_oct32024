@@ -27,7 +27,7 @@ class QuestionsSheet implements FromCollection, WithMapping, WithHeadings, WithT
     {
         $questions = Question::all();
 
-        Log::info("Questions count: " . $questions->count()); // Log count of questions
+        //Log::info("Questions count: " . $questions->count()); // Log count of questions
 
         return $questions;
     }
@@ -85,7 +85,7 @@ class QuestionsSheet implements FromCollection, WithMapping, WithHeadings, WithT
                     // Check if the attached image field is not empty
                     if ($question->attached_image) {
                         $imagePath = storage_path("app/public/Images/{$question->attached_image}");
-                        Log::info("Checking image path: {$imagePath}");
+                        //Log::info("Checking image path: {$imagePath}");
     
                         // Only attempt to access the image if the path exists
                         if (file_exists($imagePath)) {
@@ -98,10 +98,10 @@ class QuestionsSheet implements FromCollection, WithMapping, WithHeadings, WithT
                             $drawing->setCoordinates('D' . ($index + 2));
                             $drawing->setWorksheet($sheet);
                         } else {
-                            Log::warning("Image not found for question ID: {$question->id} at path: {$imagePath}");
+                            //Log::warning("Image not found for question ID: {$question->id} at path: {$imagePath}");
                         }
                     } else {
-                        Log::info("No image attached for question ID: {$question->id}");
+                        //Log::info("No image attached for question ID: {$question->id}");
                     }
                 }
             },

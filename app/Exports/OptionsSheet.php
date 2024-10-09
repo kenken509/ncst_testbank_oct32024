@@ -63,16 +63,16 @@ class OptionsSheet implements FromCollection, WithMapping, WithHeadings, WithTit
     {
         return [
             AfterSheet::class => function(AfterSheet $event) {
-                Log::info("Inside AfterSheet event for Options");
+                //Log::info("Inside AfterSheet event for Options");
                 $sheet = $event->sheet->getDelegate();
 
                 foreach ($this->collection() as $index => $option) {
-                    Log::info("Processing option ID: {$option->id}");
+                    //Log::info("Processing option ID: {$option->id}");
 
                     // Check if the option has an associated image
                     if ($option->option) { // Assuming you have an `attached_image` field
                         $imagePath = storage_path("app/public/Images/{$option->option}");
-                        Log::info("Checking image path: {$imagePath}");
+                        //Log::info("Checking image path: {$imagePath}");
 
                         // Only attempt to access the image if the path exists
                         if (file_exists($imagePath)) {
@@ -85,10 +85,10 @@ class OptionsSheet implements FromCollection, WithMapping, WithHeadings, WithTit
                             $drawing->setCoordinates('B' . ($index + 2)); // Adjust coordinates as necessary
                             $drawing->setWorksheet($sheet);
                         } else {
-                            Log::warning("Image not found for option ID: {$option->id} at path: {$imagePath}");
+                            //Log::warning("Image not found for option ID: {$option->id} at path: {$imagePath}");
                         }
                     } else {
-                        Log::info("No image attached for option ID: {$option->id}");
+                        //Log::info("No image attached for option ID: {$option->id}");
                     }
                 }
             },
