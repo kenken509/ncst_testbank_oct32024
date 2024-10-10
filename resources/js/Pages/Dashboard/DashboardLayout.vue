@@ -335,7 +335,7 @@
                                     Export
                                 </li>
                             </a> -->
-                            <li @click="exportFiles"  class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                            <li @click="backUpConfirmation"  class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                     <i class="pi pi-file-export text-2xl"></i>
                                     Back up
                                 </li>
@@ -534,6 +534,7 @@
 import { computed, ref, onMounted } from 'vue';
 import { usePage, Link, router, useForm } from '@inertiajs/vue3';
 import CustomModal from '../Global Component/CustomModal.vue';
+import Swal from 'sweetalert2/dist/sweetalert2.js'
 import axios from 'axios';
 import { capitalizeFirstLetter } from './Composables/capitalizeFirstLetter';
 
@@ -768,6 +769,7 @@ const submitUserImport = ()=>{
     importUserForm.post(route('questions.import'),{
         onSuccess: ()=>{
             isLoading.value = false
+            openRestoreModal.value = false
         }
     })
 }
@@ -858,4 +860,38 @@ const handleQuestionImageZipFileChange = (event)=>{
     restoreImportButtonDisabled.value = false;
 }
 
+const backUpConfirmation = ()=> 
+{  
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will download (excel file & zip file). Please allow multiple downloads.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, make a back up!",
+        allowOutsideClick:false,
+        allowEscapeKey:false,
+        customClass: {
+            popup: 'swal-popup-custom' // Adding a custom class
+        }
+        }).then((result) => {
+            if(result.isConfirmed)
+            {
+                exportFiles();
+                
+                
+            }
+
+            if(result.isDismissed)
+            {
+                Swal.fire({
+                    title:'Canceled',
+                    text:'Your action was canceled!',
+                    icon:'error',
+                    confirmButtonColor: '#3085d6',
+                })   
+            }
+    });
+}  
 </script>

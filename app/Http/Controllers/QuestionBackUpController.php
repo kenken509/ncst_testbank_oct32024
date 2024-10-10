@@ -115,6 +115,12 @@ class QuestionBackUpController extends Controller
             // Import from the Excel sheet
             Excel::import(new MainImport(), storage_path("app/{$excelFilePath}"));
             Log::info('Import successful >>>>>>>>>>>>>>>>>>>>>>>');
+
+            // Delete temporary files after successful import and extraction
+            Storage::delete($excelFilePath);
+            Storage::delete($zipFilePath);
+            Log::info('Temporary files deleted successfully.');
+
             
         } catch (\Exception $e) {
             Log::error('Import failed: ' . $e->getMessage());

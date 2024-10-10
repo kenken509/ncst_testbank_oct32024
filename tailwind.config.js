@@ -10,6 +10,7 @@ export default {
     extend: {
       screens: {
         'xs': '320px',  // Custom breakpoint for 320px screens
+        
       },
       gridTemplateColumns: {
         // Simple 16 row grid

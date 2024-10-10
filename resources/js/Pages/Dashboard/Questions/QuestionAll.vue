@@ -79,7 +79,7 @@
                     </div>
                     <div class=" flex w-full gap-2 col-span-3" ><!--andito ako 1-->
                         <button @click="handleProblemSetButtonClicked"  type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
-                        <button @click="handleAddQuestionModal" type="button" class="btn-primary p-2 w-full">+ New</button>
+                        <button @click="handleAddQuestionModal2" type="button" class="btn-primary p-2 w-full">+ New</button>
                     </div>
                     
                 </div>
@@ -421,11 +421,11 @@
 
         <!--ADD QUESTION MODAL-->
 
-        <Dialog v-model:visible="addQuestionModal" modal :style="{ width: '80rem', height:'100vh' }">
+        <Dialog v-model:visible="addQuestionModal" modal :style="{ width: '60rem', height:'90vh' }"> <!--working 1 addQuestionModal-->
             <ModalHeader :title="'New Question'"> 
-                <form @submit.prevent="submit"> 
+                <form @submit.prevent="submit" > 
                     <!--FORM HEADEAR-->
-                    <div class="flex flex-col md:flex-row md:justify-between w-full mb-2 mt-4">
+                    <div class="flex flex-col md:flex-row md:justify-between w-full mb-2 mt-4 ">
                         <div class="w-full" >
                             <div class="flex w-full flex-col md:items-center  md:flex-row gap-2">
                                 <span class="w-full font-semibold text-lg py-2 max-w-[150px] " >Subject Code : </span>
@@ -602,7 +602,149 @@
                 {{ announcementMessage()}}
          </div>
          
-       
+         <!--test newModal question add-->
+         <Dialog v-model:visible="addQuestionModal2"  modal header=" " :style="{ width: '60rem', height:'80vh' }" > <!--working 2 addQuestionModal-->
+            <!--header-->
+            <div class="w-full border flex justify-between items-center  bg-blue-900 p-4 pl-2 pr-4 rounded-tl-md rounded-tr-md">
+                <div class="flex  items-center gap-2">
+                    <img :src="logoUrl" alt="error" class=" w-16 h-16">
+                    <span class="text-gray-100 text-xl">{{ title }}</span>
+                </div>
+                <div class="flex  flex-col hidden md:block ">
+                    <div class="flex justify-end text-[30px] text-gray-100">
+                        {{ capitalizeFirstLetter(user.name) }}
+                    </div>
+                    <div class="flex justify-end text-gray-100">
+                        {{ capitalizeFirstLetter(user.role) }}
+                    </div>
+                </div>
+            </div>
+            <!--header-->
+
+            
+            <div class="">
+                <form @submit.prevent="submit"  > 
+                    <!--FORM HEADEAR-->
+                    <div class="flex flex-col md:flex-row md:justify-between w-full mb-2 mt-4 ">
+                        <div class="w-full" >
+                            <div class="flex w-full flex-col md:items-center  md:flex-row gap-2">
+                                <span class="w-full font-semibold lg:text-md py-2 max-w-[150px] " >Subject Code : </span>
+                                <input  class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[30px]"  :placeholder="selectedSubjectCode.name" disabled/>
+                            </div>
+                        </div>
+                        <div class="w-full  flex  md:justify-end ">
+                            <div class="flex w-full justify-end  flex-col md:items-center  md:flex-row gap-2 ">
+                                <span class="font-semibold text-md py-2  " >Term : </span>
+                                <input v-model="form.term" class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[30px]"  :placeholder="selectedTerm" disabled/>
+                            </div>
+                        </div>
+            
+                    </div>   
+                    
+                    <div class=" flex w-full mb-2 flex-col lg:flex-row ">
+                        <div class="flex w-full flex-col md:items-center  md:flex-row gap-2">
+                            <span class="w-full font-semibold text-lg py-2 max-w-[150px] lg:text-md" >Description : </span>
+                            <input  class="w-full rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[30px]"  :placeholder="selectedSubjectCode.description" disabled/>
+                        </div>
+                    </div>
+                    <hr class="border-gray-400  mb-4">
+                    <!--FORM HEADEAR-->
+
+                    <div class="flex flex-col lg:flex-row gap-2  h-full lg:h-[300px]">
+                        <!--left container-->
+                        <div class="w-full lg:w-[60%]  border flex flex-col border-gray-900 p-2 rounded-md shadow-md ">
+                            <div>
+                                <textarea v-model="form.question" cols="50" rows="3" class="w-full rounded-md" placeholder="Type your question here." required></textarea>
+                            </div>
+                            <div class="flex justify-center items-center lg:justify-start  mt-auto mb-2  h-[450px]">
+                                <div class="flex flex-col w-[160px] h-[100px] justify-center items-center gap-2 "> 
+                                    <img :src="attachedImagePreviewUrl || (imageUrl + 'image_attachment.png') " alt="Image attachment" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]"/>
+                                    <input @change="handleAttachedImageChange"  type="file" ref="fileInput" accept=".jpg, .jpeg" hidden/>
+                                    
+                                    <button @click="triggerFileInput" type="button" class="bg-gray-200 hover:bg-gray-300 border border-gray-800 p-2 text-sm max-w-[150px] w-full rounded-md">Attach Image</button>
+                                </div>
+                                <span v-if="attachedImageValidator" class="text-red-500 ml-2">{{ attachedImageValidator }}</span>
+                            </div>
+                        </div>
+                        <!--left container-->
+
+                        <!--right container-->
+                        <div class="w-full lg:w-[40%] border flex flex-col rounded-md border-gray-900 px-2 shadow-md">
+                            <div class="flex flex-col flex-grow " >
+                                <div v-if="textTab" class=" flex-grow border-b-2 border-gray-300 rounded-b-md shadow-sm p-2 h-[300px]">
+                                    <div v-for="(option,index) in options" :key="index" class="flex items-center gap-2 py-2 " >
+                                        <input 
+                                        type="radio" 
+                                        :id="`option_${index+1}`" 
+                                        name="options" 
+                                        :value="index"
+                                        v-model="selectedOption"
+                                        @change="markCorrectOption(index)"
+                                        :required="textTab"
+                                        />
+                                        <textarea v-model="options[index].option" cols="10" rows="2" class="w-full max-h-[54px] text-[10px]" :required="textTab"></textarea>
+                                    </div>
+                                </div>
+                                <div v-if="imageTab" class=" flex-grow border-b-2 border-gray-300 rounded-b-md shadow-sm p-2 ">
+                                    <div class="grid grid-cols-2 p-2 ">
+                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center   py-2 gap-2 ">
+                                            <input v-model="selectedOption" type="radio"  id="image_opton_0" name="image_options" value="0" @change="markCorrectOption(0)"  />
+                                            <div class="flex  items-center flex-col ml-2">
+                                                <input  @change="handleImageOptionFileChange_0"  type="file" hidden ref="imageOption_0" accept=".jpg, .jpeg" />                               
+                                                <img  :src="imageOptionURL_0 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[80px] max-h-[80px]"/>
+                                                <button @click="triggerImageOptionsFileInput(0)" type="button" class="bg-gray-200 hover:bg-gray-300 p-2 mt-2 border border-gray-800 rounded-md  text-[10px]">Add Image</button>
+                                                
+                                            </div>
+                                        </div>   
+                                        
+                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center   py-2 gap-2 ">
+                                            <input v-model="selectedOption" type="radio"  id="image_opton_1" name="image_options" value="1" accept=".jpg, .jpeg" @change="markCorrectOption(1)"/>
+                                            <div class="flex  items-center flex-col ml-2">
+                                                <input @change="handleImageOptionFileChange_1" type="file" hidden ref="imageOption_1"   />                               
+                                                <img :src="imageOptionURL_1 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[80px] max-h-[80px]"/>
+                                                <button @click="triggerImageOptionsFileInput(1)" type="button" class="bg-gray-200 hover:bg-gray-300 p-2 mt-2 border border-gray-800 rounded-md  text-[10px]">Add Image</button>
+                                            </div>
+                                        </div> 
+
+                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center   py-2 gap-2 ">
+                                            <input v-model="selectedOption" type="radio"  id="image_opton_2" name="image_options" value="2"  accept=".jpg, .jpeg" @change="markCorrectOption(2)" />
+                                            <div class="flex  items-center flex-col ml-2">
+                                                <input @change="handleImageOptionFileChange_2" type="file" hidden ref="imageOption_2"   />                               
+                                                <img :src="imageOptionURL_2 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[80px] max-h-[80px]"/>
+                                                <button @click="triggerImageOptionsFileInput(2)" type="button" class="bg-gray-200 hover:bg-gray-300 p-2 mt-2 border border-gray-800 rounded-md  text-[10px]">Add Image</button>
+                                            </div>
+                                        </div> 
+
+                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center   py-2 gap-2 ">
+                                            <input v-model="selectedOption" type="radio"  id="image_opton_3" name="image_options" value="3" accept=".jpg, .jpeg"  @change="markCorrectOption(3)"/>
+                                            <div class="flex  items-center flex-col ml-2">
+                                                <input @change="handleImageOptionFileChange_3" type="file" hidden ref="imageOption_3"   />                               
+                                                <img :src="imageOptionURL_3 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[80px] max-h-[80px]" />
+                                                <button @click="triggerImageOptionsFileInput(3)" type="button" class="bg-gray-200 hover:bg-gray-300 p-2 mt-2 border border-gray-800 rounded-md  text-[10px]">Add Image</button>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="ml-6 mb-2">
+                                    <button type="button" @click="textTabClicked" class=" p-2 border border-t-0 border-gray-400 rounded-bl-lg  hover:font-bold hover:text-gray-400 " :class="{'bg-blue-800 text-white hover:text-gray-100 hover:font-normal': textTab, 'bg-gray-200 ': !textTab}">Text</button>
+                                    <button type="button" @click="imageTabClicked" class="p-2 border border-t-0 border-gray-400 rounded-br-lg  hover:font-bold hover:text-gray-400 " :class="{'bg-blue-800 text-white hover:text-gray-100 hover:font-normal': imageTab, 'bg-gray-200 ': !imageTab}">Image</button>
+                                    <div>
+                                        <span class="text-red-500">{{ imageOptionValidator }}</span> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                        <!--right container-->
+                    </div>
+                    <div class="mt-12">
+                        <button type="submit" class="bg-blue-800 hover:bg-blue-700 rounded-md w-full p-2 text-gray-100"  :disabled="form.processing">Submit</button>
+                    </div>
+                </form>
+            </div>
+
+
+         </Dialog>
+
          
     </DashboardLayout>
 </template>
@@ -615,6 +757,7 @@ import Swal from 'sweetalert2/dist/sweetalert2.js'
 import ModalHeader from '../Components/ModalHeader.vue';
 import { useConvertText } from '../Composables/useConvertText';
 import { capitalizeFirstLetter } from '../Composables/capitalizeFirstLetter';
+
 
 
 function getCorrectAnswer(options)
@@ -1021,40 +1164,39 @@ const imageTab = ref(false)
 // sweet alert logic
 
 const deleteConfirmation = (questionId)=> 
-    { 
-        
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-            allowOutsideClick:false,
-            allowEscapeKey:false,
-            customClass: {
-                popup: 'swal-popup-custom' // Adding a custom class
+{  
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+        allowOutsideClick:false,
+        allowEscapeKey:false,
+        customClass: {
+            popup: 'swal-popup-custom' // Adding a custom class
+        }
+        }).then((result) => {
+            if(result.isConfirmed)
+            {
+                const deleteUrl = route('questions.delete',{id: questionId })
+                
+                router.delete(deleteUrl);
             }
-            }).then((result) => {
-                if(result.isConfirmed)
-                {
-                    const deleteUrl = route('questions.delete',{id: questionId })
-                    
-                    router.delete(deleteUrl);
-                }
 
-                if(result.isDismissed)
-                {
-                    Swal.fire({
-                        title:'Canceled',
-                        text:'Your action was canceled!',
-                        icon:'error',
-                        confirmButtonColor: '#3085d6',
-                    })   
-                }
-        });
-    }  
+            if(result.isDismissed)
+            {
+                Swal.fire({
+                    title:'Canceled',
+                    text:'Your action was canceled!',
+                    icon:'error',
+                    confirmButtonColor: '#3085d6',
+                })   
+            }
+    });
+}  
 
     const page = usePage()
     const tempSuccessMessage = computed(()=> page.props.flash.success)
@@ -1668,4 +1810,16 @@ const announcementMessage = async (announcements) => {
   }
    showData.value = false
 };
+
+
+
+// test modal
+const addQuestionModal2 = ref(false);
+const handleAddQuestionModal2 = ()=>{
+    addQuestionModal2.value = !addQuestionModal2.value
+}
 </script>
+
+<style scoped>
+
+</style>
