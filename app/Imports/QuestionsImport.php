@@ -27,41 +27,41 @@ class QuestionsImport implements ToModel, WithHeadingRow
         // Log the incoming row data for debugging
         Log::info('Processing Question Row: ', $row);
 
-        // Get the image data from the row
-        $imageData = $row['attached_image'] ?? null; // This should contain the actual image
+        // // Get the image data from the row
+        // $imageData = $row['attached_image'] ?? null; // This should contain the actual image
 
-        $imagePath = null; // Initialize the image path
+        // $imagePath = null; // Initialize the image path
 
-        if ($imageData) {
-            // Assuming the image data contains the file name at the beginning, like "filename:base64data"
+        // if ($imageData) {
+        //     // Assuming the image data contains the file name at the beginning, like "filename:base64data"
 
-            Log::info('Raw Image Data: ', ['data' => $imageData]);
-            if (strpos($imageData, ':') !== false) {
-                list($imageFileName, $base64Data) = explode(':', $imageData, 2);
-                $imageFileName = trim($imageFileName); // Use the provided file name
-                $base64Data = trim($base64Data); // Get the base64 data
+        //     Log::info('Raw Image Data: ', ['data' => $imageData]);
+        //     if (strpos($imageData, ':') !== false) {
+        //         list($imageFileName, $base64Data) = explode(':', $imageData, 2);
+        //         $imageFileName = trim($imageFileName); // Use the provided file name
+        //         $base64Data = trim($base64Data); // Get the base64 data
 
-                // Decode the image data
-                $imageData = base64_decode($base64Data);
-                if ($imageData === false) {
-                    Log::warning('Base64 decode failed for image data in row: ', $row);
-                    return null; // Skip this row if decoding fails
-                }
+        //         // Decode the image data
+        //         $imageData = base64_decode($base64Data);
+        //         if ($imageData === false) {
+        //             Log::warning('Base64 decode failed for image data in row: ', $row);
+        //             return null; // Skip this row if decoding fails
+        //         }
 
-                // Define the destination path in your public storage
-                $destinationPath = 'Images/' . basename($imageFileName); // Use the provided file name
+        //         // Define the destination path in your public storage
+        //         $destinationPath = 'Images/' . basename($imageFileName); // Use the provided file name
 
-                // Store the image in the public disk
-                Storage::disk('public')->put($destinationPath, $imageData);
+        //         // Store the image in the public disk
+        //         Storage::disk('public')->put($destinationPath, $imageData);
 
-                // Set the path to be stored in the database
-                $imagePath = $destinationPath;
-            } else {
-                Log::warning('Image data format is not valid in row: ', $row);
-            }
-        } else {
-            Log::warning('No image data found in the row.');
-        }
+        //         // Set the path to be stored in the database
+        //         $imagePath = $destinationPath;
+        //     } else {
+        //         Log::warning('Image data format is not valid in row: ', $row);
+        //     }
+        // } else {
+        //     Log::warning('No image data found in the row.');
+        // }
 
         // Continue with the rest of the logic for updating or creating a question
         return Question::updateOrCreate(
@@ -69,7 +69,7 @@ class QuestionsImport implements ToModel, WithHeadingRow
             [
                 'question' => $row['question'],
                 'type' => $row['type'] ?? null, // Handle potential missing 'type'
-                'attached_image' => $imagePath, // Store the path
+                'attached_image' =>  $row['attached_image'] ?? null,// Store the path $imagePath,
                 'term' => $row['term'] ?? null, // Handle potential missing 'term'
                 'subject_code_id' => $row['subject_code'] ?? null, // Handle potential missing 'subject_code'
                 'author_id' => $row['author_id'] ?? null, // Handle potential missing 'author_id'
