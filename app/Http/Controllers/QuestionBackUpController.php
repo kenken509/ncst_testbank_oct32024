@@ -7,6 +7,7 @@ use ZipArchive;
 use App\Imports\MainImport;
 use Illuminate\Http\Request;
 use App\Imports\OptionsImport;
+use App\Jobs\DeleteBackupFiles;
 use App\Exports\QuestionsExport;
 use App\Imports\QuestionsImport;
 use App\Imports\QuestionNewImport;
@@ -19,13 +20,19 @@ class QuestionBackUpController extends Controller
   
     public function export()
     {
+        
+        
         // must delete after a successful download.>>>>>>>>>>>> ends here
         // Create the Excel file
-        $excelFileName = 'questions_and_options.xlsx';
+        $randomNumber = rand(1,9999);
+        $randomString = str()->random(5);
+        
+
+        $date = date('m_d_Y');
+        $excelFileName = 'questions_options_backup-'.$date.'_'.$randomString.$randomNumber.'.xlsx';
         $excelFilePath = storage_path('app/public/' . $excelFileName);
         
-        // Store the Excel file
-        //Excel::store(new QuestionsExport(), $excelFileName);
+       
         
         try {
             
@@ -40,8 +47,9 @@ class QuestionBackUpController extends Controller
         }
 
         // Create the zip file
+        
         $zip = new ZipArchive();
-        $zipFileName = 'images.zip';
+        $zipFileName = 'images_backup-'.$date.'_'.$randomString.$randomNumber.'.zip';
         $zipFilePath = storage_path('app/public/' . $zipFileName);
 
         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
@@ -59,29 +67,55 @@ class QuestionBackUpController extends Controller
             return response()->json(['error' => 'Could not create zip file'], 500);
         }
 
-        // Return a response with links to download both files
-        return response()->json([
+        
+        $response =  response()->json([
             'excel_download_url' => url("storage/{$excelFileName}"),
             'zip_download_url' => url("storage/{$zipFileName}"),
         ]);
+
+        // Dispatch the delete job with a delay
+        $delay = now()->addMinutes(10); // this will be executed after 10mins 
+        DeleteBackupFiles::dispatch([$excelFileName, $zipFileName])->delay($delay);
+
+        return $response;
     }
 
     public function import(Request $request)
     {
-        // Validate the uploaded file
+        // Validate the uploaded files
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls',
+            'excelFile' => 'required|mimes:xlsx,xls',
+            'imageZipFile' => 'required|mimes:zip',
         ]);
 
-        // Store the uploaded file temporarily
-        $filePath = $request->file('file')->store('temp.xlsx');
-        Log::info('Stored file: ', ['file' => $filePath]);
+        
 
+       // Store the uploaded Excel file temporarily
+        $excelFilePath = $request->file('excelFile')->store('temp.xlsx');
+        Log::info('Stored Excel file: ', ['file' => $excelFilePath]);
+
+        // Extract images from the zip file
+        $zipFilePath = $request->file('imageZipFile')->store('temp.zip');
+        Log::info('Stored Zip file: ', ['file' => $zipFilePath]);
         // Import from both sheets
-        try {
-            Excel::import(new MainImport(), storage_path("app/{$filePath}"));
-            Log::info('Import successful >>>>>>>>>>>>>>>>>>>>>>>');
 
+        try {
+            // Extract the zip file
+            $zip = new \ZipArchive;
+            if ($zip->open(storage_path("app/{$zipFilePath}")) === TRUE) {
+                $extractPath = storage_path('app/public/Images');
+                $zip->extractTo($extractPath);
+                $zip->close();
+                Log::info('Images extracted successfully.');
+            } else {
+                Log::error('Failed to open zip file.');
+                return redirect()->back()->with('error', 'Failed to open the zip file.');
+            }
+    
+            // Import from the Excel sheet
+            Excel::import(new MainImport(), storage_path("app/{$excelFilePath}"));
+            Log::info('Import successful >>>>>>>>>>>>>>>>>>>>>>>');
+            
         } catch (\Exception $e) {
             Log::error('Import failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Data import failed: ' . $e->getMessage());

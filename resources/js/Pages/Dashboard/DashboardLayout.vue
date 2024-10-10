@@ -337,13 +337,13 @@
                             </a> -->
                             <li @click="exportFiles"  class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                     <i class="pi pi-file-export text-2xl"></i>
-                                    Export
+                                    Back up
                                 </li>
                             <li v-if="user.role==='admin'" class="flex pl-10   items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
-                                <button @click="handleopenExportModal">
+                                <button @click="handleOpenRestoreModal">
                                     <i class="pi pi-cloud-upload pr-1 text-2xl p"></i>
                                     
-                                    Import 
+                                    Restore 
                                 </button>
                             </li>
                         </ul>
@@ -488,20 +488,36 @@
             </div>
         </div>
 
-        <Dialog v-model:visible="openExportModal" modal header="Import Questions" :style="{ width: '25rem' }">
+        <Dialog v-model:visible="openRestoreModal" modal header="Restore Questions" :style="{ width: '25rem' }" @hide="clearFormInputs" >
             <div class="relative"><hr/></div>
             <ProgressSpinner v-if="isLoading"  class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2"  />
-            <div v-if="handleImportQuestionsError" class="mt-2">
+            
+            <form @submit.prevent="submitUserImport">
+                <div v-if="handleImportQuestionsError" class="mt-2">
+                    <span class="text-red-500 ">
+                        {{ handleImportQuestionsError }}
+                    </span>
+                </div>
+                <div class="my-4">
+                    <div class="mb-2">
+                        <label for="excelFile" class="font-bold">Excel File: </label>
+                    </div>
+                    
+                    <input type="file" id="excelFile" ref="importExcelInputFile" accept=".xlsx, xls" @change="handleQuestionExcelFileChange" required/>
+                </div>
+                <div v-if="handleImportImageError" class="mt-2">
                 <span class="text-red-500 ">
-                    {{ handleImportQuestionsError }}
+                    {{ handleImportImageError }}
                 </span>
             </div>
-            <form @submit.prevent="submitUserImport">
-                <div class="mt-2">
-                    <input type="file" ref="exportInputFile" accept=".xlsx, xls" @change="handleExportInputFileChange" required/>
+                <div class="my-4" v-if="importImageZipInputFileVisible">
+                    <div class="mb-2">
+                        <label for="imageZipFile" class="font-bold">Image zip file: </label>
+                    </div>
+                    <input type="file" id="imageZipFile" ref="importImageZipInputFile" accept=".zip" @change="handleQuestionImageZipFileChange" required/>
                 </div>
-                <div class="py-4">
-                    <button   class="w-full bg-blue-900 p-2 rounded-md text-gray-100" type="submit" >Import</button> <!-- andito ako 2-->
+                <div class="py-4" >
+                    <button   class="w-full bg-blue-900 p-2 rounded-md text-gray-100 disabled:bg-gray-600 " type="submit" :disabled="restoreImportButtonDisabled" >Restore </button> <!-- andito ako 2-->
                 </div>
             </form>
            
@@ -725,12 +741,26 @@ const downloadFile = (url) => {
 
 
 //import user logic
-const exportInputFile = ref(null);
-const openExportModal = ref(false);
+const importExcelInputFile = ref(null);
+const importImageZipInputFile = ref(null);
+const openRestoreModal = ref(false);
 const handleImportQuestionsError = ref('');
+const handleImportImageError = ref('');
+const restorationKey = ref('');
+const importImageZipInputFileVisible = ref(false);
+const restoreImportButtonDisabled = ref(true);
+
 const importUserForm = useForm({
-    file:'',
+    excelFile:'',
+    imageZipFile:'',
 })
+
+const clearFormInputs = ()=>{
+    importExcelInputFile.value =''
+    importImageZipInputFileVisible.value =''
+    handleImportQuestionsError.value = ''
+    handleImportImageError.value = ''
+}
 
 
 const submitUserImport = ()=>{
@@ -742,31 +772,90 @@ const submitUserImport = ()=>{
     })
 }
 
-const handleopenExportModal = ()=>{
-    openExportModal.value = !openExportModal.value
-    console.log(exportInputFile.value)
+const handleOpenRestoreModal = ()=>{
+    openRestoreModal.value = !openRestoreModal.value
+    console.log(importExcelInputFile.value)
 }
 
-const handleExportInputFileChange = (event)=>{ // change export to import
-    const file = event.target.files[0];
-
-
-    if (file) 
-    {
+const handleQuestionExcelFileChange = (event)=>{ // change export to import
+        const file = event.target.files[0];
         let validExtensions = ['xls', 'xlsx'];
         let fileExtension = file.name.split('.').pop().toLowerCase();
+        let fileName = file.name.toLowerCase();
+        let key1 = file.name.split('-');
+        let key2 = key1[1].split('.');
 
-         // Check if the file extension is valid
-        if (!validExtensions.includes(fileExtension)) 
-        {
+        
+        // Check if the file extension is valid
+        if (!validExtensions.includes(fileExtension)) {
             handleImportQuestionsError.value = 'Please upload a valid Excel file (.xls or .xlsx).';
-            exportInputFile.value.value = ''; // Reset the input
+            importExcelInputFile.value = ''; // Reset the input
+            importImageZipInputFileVisible.value = false
             return;
         }
 
+        // Check if the filename starts with "questions_options_backup"
+        if (!fileName.startsWith('questions_options_backup')) {
+            handleImportQuestionsError.value = 'Please upload a file that starts with "questions_options_backup".';
+            importExcelInputFile.value = ''; // Reset the input
+            importImageZipInputFileVisible.value = false
+            return;
+        }
+
+        restorationKey.value = key2[0];
         handleImportQuestionsError.value = '';
-        importUserForm.file = file;
-    }
+        importUserForm.excelFile = file;
+        importImageZipInputFileVisible.value = true;
     
 }
+
+const handleQuestionImageZipFileChange = (event)=>{
+    const file = event.target.files[0];
+    let validExtensions = ['zip'];
+    let fileExtension = file.name.split('.').pop().toLowerCase();
+    let fileName = file.name.toLowerCase();
+    let key1 = file.name.split('-');
+    let key2 = key1[1].split('.');
+
+   
+     // Check if the file extension is valid
+    if (!validExtensions.includes(fileExtension)) 
+    {
+        handleImportImageError.value = 'Please upload a valid zip file (".zip").';
+        importImageZipInputFile.value = ''; // Reset the image zip input
+        restoreImportButtonDisabled.value = true
+        return;
+    }
+
+    // Check if the filename starts with "images_backup"
+    if (!fileName.startsWith('images_backup')) 
+    {
+        handleImportImageError.value = 'Please upload a file that starts with "images_backup".';
+        importImageZipInputFile.value = ''; // Reset the image zip input
+        restoreImportButtonDisabled.value = true
+        return;
+    }
+    else
+    {
+        handleImportImageError.value =''
+        
+     }
+    
+    if(!(restorationKey.value === key2[0]))
+    {
+        handleImportImageError.value = 'Please upload a file that ends with "'+restorationKey.value+'"'
+        importImageZipInputFile.value = ''; // Reset the image zip input
+        restoreImportButtonDisabled.value = true
+        return;
+    }
+    else
+    {
+        handleImportImageError.value = ''
+    }
+    
+    importUserForm.imageZipFile = file;
+    handleImportQuestionsError.value = '';
+    restoreImportButtonDisabled.value = false;
+}
+
 </script>
