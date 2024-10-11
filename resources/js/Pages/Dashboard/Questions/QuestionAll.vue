@@ -79,7 +79,7 @@
                     </div>
                     <div class=" flex w-full gap-2 col-span-3" ><!--andito ako 1-->
                         <button @click="handleProblemSetButtonClicked"  type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
-                        <button @click="handleAddQuestionModal2" type="button" class="btn-primary p-2 w-full">+ New</button>
+                        <button @click="handleAddQuestionModal" type="button" class="btn-primary p-2 w-full">+ New</button> <!-- debugging-->
                     </div>
                     
                 </div>
@@ -421,11 +421,11 @@
 
         <!--ADD QUESTION MODAL-->
 
-        <Dialog v-model:visible="addQuestionModal" modal :style="{ width: '60rem', height:'90vh' }"> <!--working 1 addQuestionModal-->
+        <Dialog v-model:visible="addQuestionModal" modal :style="{ width: '80rem', height:'100vh' }">
             <ModalHeader :title="'New Question'"> 
-                <form @submit.prevent="submit" > 
+                <form @submit.prevent="submit"> 
                     <!--FORM HEADEAR-->
-                    <div class="flex flex-col md:flex-row md:justify-between w-full mb-2 mt-4 ">
+                    <div class="flex flex-col md:flex-row md:justify-between w-full mb-2 mt-4">
                         <div class="w-full" >
                             <div class="flex w-full flex-col md:items-center  md:flex-row gap-2">
                                 <span class="w-full font-semibold text-lg py-2 max-w-[150px] " >Subject Code : </span>
@@ -541,7 +541,6 @@
                     </div>
                 </form>
             </ModalHeader>
-            
         </Dialog>
         <!-- ADD QUESTION MODAL-->
 
@@ -656,12 +655,12 @@
                             <div>
                                 <textarea v-model="form.question" cols="50" rows="3" class="w-full rounded-md" placeholder="Type your question here." required></textarea>
                             </div>
-                            <div class="flex justify-center items-center lg:justify-start  mt-auto mb-2  h-[450px]">
-                                <div class="flex flex-col w-[160px] h-[100px] justify-center items-center gap-2 "> 
+                            <div class="flex justify-center items-center lg:justify-start  mt-auto   h-[450px] ">
+                                <div class="flex flex-col w-[160px] h-[100px]  items-center justify-center gap-1 "> 
                                     <img :src="attachedImagePreviewUrl || (imageUrl + 'image_attachment.png') " alt="Image attachment" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]"/>
                                     <input @change="handleAttachedImageChange"  type="file" ref="fileInput" accept=".jpg, .jpeg" hidden/>
                                     
-                                    <button @click="triggerFileInput" type="button" class="bg-gray-200 hover:bg-gray-300 border border-gray-800 p-2 text-sm max-w-[150px] w-full rounded-md">Attach Image</button>
+                                    <button @click="triggerFileInput" type="button" class="bg-gray-200 hover:bg-gray-300 border border-gray-800 p-1 text-[10px] max-w-[100px] w-full rounded-md ">Attach Image</button>
                                 </div>
                                 <span v-if="attachedImageValidator" class="text-red-500 ml-2">{{ attachedImageValidator }}</span>
                             </div>
@@ -669,8 +668,8 @@
                         <!--left container-->
 
                         <!--right container-->
-                        <div class="w-full lg:w-[40%] border flex flex-col rounded-md border-gray-900 px-2 shadow-md">
-                            <div class="flex flex-col flex-grow " >
+                        <div class="w-full lg:w-[40%] border flex flex-col rounded-md border-gray-900  shadow-md ">
+                            <div class="flex flex-col flex-grow w-full  " >
                                 <div v-if="textTab" class=" flex-grow border-b-2 border-gray-300 rounded-b-md shadow-sm p-2 h-[300px]">
                                     <div v-for="(option,index) in options" :key="index" class="flex items-center gap-2 py-2 " >
                                         <input 
@@ -685,42 +684,42 @@
                                         <textarea v-model="options[index].option" cols="10" rows="2" class="w-full max-h-[54px] text-[10px]" :required="textTab"></textarea>
                                     </div>
                                 </div>
-                                <div v-if="imageTab" class=" flex-grow border-b-2 border-gray-300 rounded-b-md shadow-sm p-2 ">
-                                    <div class="grid grid-cols-2 p-2 ">
-                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center   py-2 gap-2 ">
+                                <div v-if="imageTab" class=" flex-grow border-b-2 border-gray-300 rounded-b-md shadow-sm p-2 z-0 ">
+                                    <div class="grid grid-cols-2  ">
+                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center  p-1   ">
                                             <input v-model="selectedOption" type="radio"  id="image_opton_0" name="image_options" value="0" @change="markCorrectOption(0)"  />
-                                            <div class="flex  items-center flex-col ml-2">
+                                            <div class="flex justify-center items-center flex-col ml-2">
                                                 <input  @change="handleImageOptionFileChange_0"  type="file" hidden ref="imageOption_0" accept=".jpg, .jpeg" />                               
-                                                <img  :src="imageOptionURL_0 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[80px] max-h-[80px]"/>
-                                                <button @click="triggerImageOptionsFileInput(0)" type="button" class="bg-gray-200 hover:bg-gray-300 p-2 mt-2 border border-gray-800 rounded-md  text-[10px]">Add Image</button>
+                                                <img  :src="imageOptionURL_0 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]"/>
+                                                <button @click="triggerImageOptionsFileInput(0)" type="button" class="bg-gray-200 hover:bg-gray-300 p-1 mt-2 border border-gray-800 rounded-md w-[100px] text-[10px]">Add Image</button>
                                                 
                                             </div>
                                         </div>   
                                         
-                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center   py-2 gap-2 ">
+                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center  p-1  ">
                                             <input v-model="selectedOption" type="radio"  id="image_opton_1" name="image_options" value="1" accept=".jpg, .jpeg" @change="markCorrectOption(1)"/>
                                             <div class="flex  items-center flex-col ml-2">
                                                 <input @change="handleImageOptionFileChange_1" type="file" hidden ref="imageOption_1"   />                               
-                                                <img :src="imageOptionURL_1 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[80px] max-h-[80px]"/>
-                                                <button @click="triggerImageOptionsFileInput(1)" type="button" class="bg-gray-200 hover:bg-gray-300 p-2 mt-2 border border-gray-800 rounded-md  text-[10px]">Add Image</button>
+                                                <img :src="imageOptionURL_1 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-mdmax-w-[100px] max-h-[100px]"/>
+                                                <button @click="triggerImageOptionsFileInput(1)" type="button" class="bg-gray-200 hover:bg-gray-300 p-1 mt-2 border border-gray-800 rounded-md w-[100px] text-[10px]">Add Image</button>
                                             </div>
                                         </div> 
 
-                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center   py-2 gap-2 ">
+                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center  p-1  ">
                                             <input v-model="selectedOption" type="radio"  id="image_opton_2" name="image_options" value="2"  accept=".jpg, .jpeg" @change="markCorrectOption(2)" />
                                             <div class="flex  items-center flex-col ml-2">
                                                 <input @change="handleImageOptionFileChange_2" type="file" hidden ref="imageOption_2"   />                               
-                                                <img :src="imageOptionURL_2 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[80px] max-h-[80px]"/>
-                                                <button @click="triggerImageOptionsFileInput(2)" type="button" class="bg-gray-200 hover:bg-gray-300 p-2 mt-2 border border-gray-800 rounded-md  text-[10px]">Add Image</button>
+                                                <img :src="imageOptionURL_2 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]"/>
+                                                <button @click="triggerImageOptionsFileInput(2)" type="button" class="bg-gray-200 hover:bg-gray-300 p-1 mt-2 border border-gray-800 rounded-md w-[100px] text-[10px]">Add Image</button>
                                             </div>
                                         </div> 
 
-                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center   py-2 gap-2 ">
+                                        <div  class="col-span-2 lg:col-span-1 flex items-center justify-center  p-1  ">
                                             <input v-model="selectedOption" type="radio"  id="image_opton_3" name="image_options" value="3" accept=".jpg, .jpeg"  @change="markCorrectOption(3)"/>
                                             <div class="flex  items-center flex-col ml-2">
                                                 <input @change="handleImageOptionFileChange_3" type="file" hidden ref="imageOption_3"   />                               
-                                                <img :src="imageOptionURL_3 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[80px] max-h-[80px]" />
-                                                <button @click="triggerImageOptionsFileInput(3)" type="button" class="bg-gray-200 hover:bg-gray-300 p-2 mt-2 border border-gray-800 rounded-md  text-[10px]">Add Image</button>
+                                                <img :src="imageOptionURL_3 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]" />
+                                                <button @click="triggerImageOptionsFileInput(3)" type="button" class="bg-gray-200 hover:bg-gray-300 p-1 mt-2 border border-gray-800 rounded-md w-[100px] text-[10px]">Add Image</button>
                                             </div>
                                         </div> 
                                     </div>

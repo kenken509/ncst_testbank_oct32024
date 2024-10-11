@@ -348,7 +348,7 @@ class QuestionController extends Controller
     public function update(Request $request)
     {
         
-        //dd($request);
+        
         //dd($request->attached_image);
         // question_id:data.question.id,
         // question:data.question.question,
@@ -360,7 +360,7 @@ class QuestionController extends Controller
         // editor_id:user.id,
         // options:[],
        $questionToUpdate = Question::with('options')->findOrFail($request->question_id);
-    
+       
         
         if($request->type == 'text')
         {
@@ -547,6 +547,7 @@ class QuestionController extends Controller
                 {
                     try
                     {
+                        
                         DB::beginTransaction();
                         $questionToUpdate->question         = $request->question;
                         $questionToUpdate->type             = $request->type;
@@ -593,8 +594,10 @@ class QuestionController extends Controller
        
         if($request->type == 'image')
         { 
+           
             if($questionToUpdate->attached_image)
             {
+                
                 $tempOptionImages = [];
                 $tempAttachedImage = [];
                 //delete the attached image and proceed to updating;
@@ -730,6 +733,72 @@ class QuestionController extends Controller
 
                     
                 }
+            }
+            else // no attached image >>>>>>>>>>>>>>>>>>>>>>> working here
+            {
+                
+                try
+                {
+                    
+                    
+                    DB::beginTransaction();
+                    
+                    $questionToUpdate->question = $request->question;
+                    $questionToUpdate->type = $request->type;
+                    $questionToUpdate->term = $request->term;
+                    $questionToUpdate->subject_code_id = $request->subject_code_id;
+                    $questionToUpdate->editor_id = $request->editor_id;
+                    $questionToUpdate->save();
+
+                    foreach($request->options as $index => $option)
+                    {
+                        Log::info('Options correct anser index : '.$index.' = '.$option['isCorrect']);
+                        $answer = $option['isCorrect'] == 'true' ? 'true':'false';
+                        $optionToUpdate = Option::findOrFail($option['option_id']);
+
+                        if (isset($option['option']) && $option['option'] instanceof \Illuminate\Http\UploadedFile)
+                        {
+                            
+                            
+                            $optionImagePath = 'Images/'.$optionToUpdate->option;
+                               // dito ako huminto >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                            //delete existing image
+                            if (Storage::disk('public')->exists($optionImagePath)) {
+                                Storage::disk('public')->delete($optionImagePath);
+                                Log::info('File deleted successfully.');
+                            } else {
+                                Log::warning('File not found: ' . $optionImagePath);
+                            }
+
+
+                            $file = $option['option'];
+                            
+                            $path = $file->store("Images",'public');
+                            $imagePath = basename($path);
+
+                            $tempOptionImages[] = $imagePath;
+
+                            $optionToUpdate->option = $imagePath;
+                            
+                        }
+
+                        $optionToUpdate->isCorrect = $answer;
+                        $optionToUpdate->save();
+                        
+                    }
+
+                    DB::commit();
+                    return redirect()->route('questions.show')->with('success', 'Successfully updated a question.');
+
+                }
+                catch(\Exception $e)
+                {
+                    DB::rollback();
+                    Log::error('Error updating question : '.$e->getMessage());
+
+                    return redirect()->back()->with('error','Failed to updated question.');
+                }
+
             }
         }
         

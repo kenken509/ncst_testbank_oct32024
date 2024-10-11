@@ -335,7 +335,7 @@
                                     Export
                                 </li>
                             </a> -->
-                            <li @click="backUpConfirmation"  class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                            <li v-if="user.role === 'admin'" @click="backUpConfirmation"  class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                     <i class="pi pi-file-export text-2xl"></i>
                                     Back up
                                 </li>
