@@ -734,7 +734,7 @@ class QuestionController extends Controller
                     
                 }
             }
-            else // no attached image >>>>>>>>>>>>>>>>>>>>>>> working here
+            else //>>> no attached image >>>>>>>>>>>>>>>>>>>>>>> working here
             {
                 
                 try
