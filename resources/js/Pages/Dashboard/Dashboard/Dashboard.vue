@@ -34,7 +34,7 @@
                 <div class="  flex justify-center border rounded-t-md bg-blue-900 border-gray-500 text-gray-800 w-full">
                     <span class="text-[20px] font-semibold text-white p-1">LOWEST CONTRIBUTIONS</span>
                 </div>
-                <div class="w-full h-full overflow-x-auto">
+                <div class="w-full h-auto overflow-x-auto ">
                     <table class="min-w-full h-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 ">
                         <thead class="text-xs text-gray-200 uppercase bg-blue-900 dark:bg-gray-700 dark:text-gray-400">
                             <tr scope="row">
@@ -69,14 +69,14 @@
                     </table>
                 </div>
             </div>
-            <div class="mt-10 col-span-1 border-gray-300 w-full rounded-t-md ">
-                    <div class="w-full flex justify-center bg-blue-900 py-2 border-b-[1px] border-gray-500">
+            <div class="mt-10 col-span-1 border-gray-300 w-full rounded-lg border border-1 border-gray-500 shadow-md">
+                    <div class="w-full flex justify-center bg-blue-900 py-2 border-b-[1px] border-gray-500 rounded-t-md">
                         <span class=" text-white font-bold ">
                             EMPTY SUBJECT CODES
                         </span>
                     </div>
                     
-                    <table class="w-full table-fixed">
+                    <table class="w-full table-fixed  border-green-400">
                         <thead class="bg-blue-900">
                             <tr scope="row" class="text-white w-full">
                                 <th scope="col" class="px-6 py-3">Department Name</th>
@@ -84,7 +84,7 @@
                                 <th scope="col" class="px-6 py-3">View</th>
                             </tr>
                         </thead>
-                        <tbody v-for="department in emptySubjectCodes" :key="department.id">
+                        <tbody v-for="department in emptySubjectCodes" :key="department.id"  class="rounded-md">
 
                             <tr v-if="department.subject_codes.length" scope="row text" class=" ">
                                 <td scope="col" class="px-6 py-3 text-gray-800 border text-center">
