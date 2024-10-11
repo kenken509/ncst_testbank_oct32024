@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Question;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -16,6 +17,12 @@ class DashboardController extends Controller
         $coAdminsCount  = User::where('role', 'co-admin')->count();
         $usersCount     = User::all()->count();
         $questionsCount = Question::all()->count();
+        // get all the subject codes with empty questions per department
+
+        $emptySubjectCodes = $emptySubjectCodes = Department::with(['subjectCodes' => function ($query) {
+                                $query->whereDoesntHave('questions');
+                            }])->get();
+        
         
         $userQuestionCount = User::withCount('questions')
                                 ->orderBy('questions_count','asc')
@@ -23,13 +30,14 @@ class DashboardController extends Controller
                                 ->get();
         
         return inertia('Dashboard/Dashboard/Dashboard',[
-            'adminsCount'   => $adminsCount,
-            'depHeadCount'  => $depHeadCount,
-            'facultyCount'  => $facultyCount,
-            'questionsCount'=> $questionsCount,
+            'adminsCount'       => $adminsCount,
+            'depHeadCount'      => $depHeadCount,
+            'facultyCount'      => $facultyCount,
+            'questionsCount'    => $questionsCount,
             'userQuestionCount' => $userQuestionCount,
-            'coAdminsCount' => $coAdminsCount,
-            'usersCount'    => $usersCount,
+            'coAdminsCount'     => $coAdminsCount,
+            'usersCount'        => $usersCount,
+            'emptySubjectCodes' => $emptySubjectCodes,
         ]);
     }
 

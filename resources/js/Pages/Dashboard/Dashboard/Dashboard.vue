@@ -28,9 +28,9 @@
         </div>
         <!--users count-->
 
-        <div class="flex gap-2 max-h-[500px]">
+        <div class="grid grid-cols-2 gap-2 w-full gap-2 justify-between ">
             
-            <div class="relative ] overflow-x-auto shadow-md sm:rounded-lg mt-10 w-full border-gray-500 border">
+            <div class=" col-span-1  overflow-x-auto shadow-md sm:rounded-lg mt-10  border-gray-500 border  ">
                 <div class="  flex justify-center border rounded-t-md bg-blue-900 border-gray-500 text-gray-800 w-full">
                     <span class="text-[20px] font-semibold text-white p-1">LOWEST CONTRIBUTIONS</span>
                 </div>
@@ -69,9 +69,54 @@
                     </table>
                 </div>
             </div>
-            <div class="w-full max-h-[500px] flex justify-center items-center border border-gray-500 mt-10 rounded-lg shadow-md">
-                <Pie :data="chartData" :options="chartOptions" class="p-2" />
+            <div class="mt-10 col-span-1 border-gray-300 w-full rounded-t-md ">
+                    <div class="w-full flex justify-center bg-blue-900 py-2 border-b-[1px] border-gray-500">
+                        <span class=" text-white font-bold ">
+                            EMPTY SUBJECT CODES
+                        </span>
+                    </div>
+                    
+                    <table class="w-full table-fixed">
+                        <thead class="bg-blue-900">
+                            <tr scope="row" class="text-white w-full">
+                                <th scope="col" class="px-6 py-3">Department Name</th>
+                                <th scope="col" class="px-6 py-3">Codes</th>
+                                <th scope="col" class="px-6 py-3">View</th>
+                            </tr>
+                        </thead>
+                        <tbody v-for="department in emptySubjectCodes" :key="department.id">
+
+                            <tr v-if="department.subject_codes.length" scope="row text" class=" ">
+                                <td scope="col" class="px-6 py-3 text-gray-800 border text-center">
+                                    {{department.name}}
+                                </td>
+                                <td scope="col" class="px-6 py-3 text-center text-gray-800 border">
+                                    {{department.subject_codes.length}}
+                                </td>
+                                <td scope="col" class="px-6 py-3 text-center text-gray-800 border hover:cursor-pointer" @click="handleOpenCodesModal(department.id)">
+                                    <i class="pi pi-eye text-blue-800 text-lg hover:text-blue-400" ></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                
+                
             </div>
+           
+
+            <Dialog v-model:visible="openCodesModal" modal header=" Empty Codes List" title="Empty Codes List" :style="{ width: '20rem'}">
+                <div><hr></div>
+                
+                <div v-for="(code, index) in selectedDepartmentCodeList[0].subject_codes" :key="index" class="mt-4">
+                    <span>{{ index+1 }} . &nbsp;</span>
+                    <span>
+                        {{ code.name }}
+                    </span>
+                </div>
+            </Dialog>
+            <!-- <div class="w-full max-h-[500px] flex justify-center items-center border border-gray-500 mt-10 rounded-lg shadow-md">
+                <Pie :data="chartData" :options="chartOptions" class="p-2" />
+            </div> -->
         </div>
         
 
@@ -83,7 +128,7 @@
 import DashboardLayout from '../DashboardLayout.vue';
 import { Pie } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from 'chart.js'
-import {computed} from 'vue'
+import {computed, ref} from 'vue'
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 
@@ -95,6 +140,7 @@ const data = defineProps({
     questionsCount:Number,
     userQuestionCount:Array,
     coAdminsCount:Number,
+    emptySubjectCodes:Array,
 })
 
 // Compute chart data based on props
@@ -131,4 +177,13 @@ const chartOptions = computed(() => ({
   },
 }))
 
+
+const openCodesModal = ref(false)
+const selectedDepartmentCodeList = ref([]);
+const handleOpenCodesModal = (id)=>{
+    openCodesModal.value = !openCodesModal.value
+    selectedDepartmentCodeList.value = data.emptySubjectCodes.filter((dep)=> dep.id === id);
+
+    //console.log(selectedDepartmentCodeList.value)
+}
 </script>
