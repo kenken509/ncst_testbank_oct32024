@@ -10,8 +10,10 @@ use App\Models\SubjectCode;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use App\Exports\QuestionsExport;
+use App\Imports\QuestionsImport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Imports\ExcelQuestionImport;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
@@ -891,16 +893,42 @@ class QuestionController extends Controller
             
         }
     }
-
-
    
-    
    
-    public function export()
+    public function importQuestion(Request $request)
     {
-        
-        return Excel::download(new QuestionsExport, 'question.xlsx');
+       
+        // question type will always be text
+        // attached image is null
+      
+        $subjecCodeId = $request->subjectCodeId;
+        $term = $request->term;
+        $author_id = $request->author;
+
+       
+        // Pass the additional variable to the import class
+        Excel::import(new ExcelQuestionImport($subjecCodeId, $term,$author_id), $request->file('excelFile'));
+
+        return redirect()->back()->with('success', 'Questions imported successfully!');
     }
 
+    public function downloadExcelFormat()
+    {
+        
+        
+        $filePath = '/excel_format/question_import_format.xlsx';
+
+        if (Storage::disk('public')->exists($filePath)) {
+            Log::info('download excel format successfully!!!');
+            return Storage::disk('public')->download($filePath);
+        }
+        else
+        {
+            Log::info('download excel format not exist!!!');
+        }
+
+        
+        return abort(404); // Return 404 if the file doesn't exist
+    }
     
 }

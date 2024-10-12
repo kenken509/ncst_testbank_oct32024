@@ -80,6 +80,8 @@ Route::controller(QuestionController::class)->group(function(){
     //Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store.modal');
     Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show')->middleware('isAdminCoAdminDepHead');
     Route::post('/test_bank/question/update', 'update')->name('question.update')->middleware('isAdminCoAdminDepHead');
+    Route::post('/test_bank/question/import', 'importQuestion')->name('question.excel-import');
+    Route::get('/test_bank/Question/download/excel-format', 'downloadExcelFormat')->name('question.excel.format');
 
 });
 

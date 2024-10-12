@@ -539,6 +539,9 @@
                     <div class="my-4">
                         <button type="submit" class="bg-blue-800 hover:bg-blue-700 rounded-md w-full p-2 text-gray-100"  :disabled="form.processing">Submit</button>
                     </div>
+                    <div class="my-4">
+                        <button type="button" class="bg-blue-800 hover:bg-blue-700 rounded-md w-full p-2 text-gray-100"  @click="handleImportButtonClicked">Import</button>
+                    </div>
                 </form>
             </ModalHeader>
         </Dialog>
@@ -744,7 +747,43 @@
 
          </Dialog>
 
-         
+         <!--import excel file modal-->
+         <!-- <Dialog v-model:visible="openImportExcelQuestionModal" modal header="Import Excel File" :style="{ width: '30rem',  }" >
+            <div><hr></div>
+            
+         </Dialog> -->
+         <!--import excel file modal-->
+         <div v-if="openImportExcelQuestionModal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-4">
+                <header class="flex justify-between items-center mb-2 border-b-[1px]">
+                    <h2 class="text-xl font-semibold">Import Excel File</h2>
+                    <button @click="handleCloseImportExcelQuestionModal" class="text-gray-600 hover:text-gray-800">
+                        <i class="pi pi-times"></i>
+                    </button>
+                </header>
+                <div class="body-container">
+                    <form @submit.prevent="importConfirmation">
+                        <div class="flex flex-col hover:cursor-pointer mb-2 border-b-[1px] py-2">
+                            <label class="font-bold hover:cursor-pointer mb-2" for="excelQuestionInputFileId">Excel file: </label>
+                            <input  type="file" ref="excelQuestionInputFile" id="excelQuestionInputFileId" accept=".xlsx" @change="handleImportExcelQuestionInputFileChange" required/>
+                            <span v-if="importExcelFileError" class="text-red-500 ">
+                                {{ importExcelFileError }}
+                            </span>
+                        </div>
+                        
+                        <div>
+                            <button type="submit" class="w-full btn-primary">Import</button>
+                           
+                        </div>
+                    </form>
+                    <button :disabled="isDownloading" class="w-full btn-primary flex items-center justify-center gap-2" @click="downloadExcelFormat" >
+                        <i class="pi pi-arrow-circle-down"></i>
+                        Excel Format {{ isDownloading }}
+                    </button>
+                </div>
+            </div>
+         </div>
+          <!--import excel file modal-->
     </DashboardLayout>
 </template>
 
@@ -757,7 +796,8 @@ import ModalHeader from '../Components/ModalHeader.vue';
 import { useConvertText } from '../Composables/useConvertText';
 import { capitalizeFirstLetter } from '../Composables/capitalizeFirstLetter';
 
-
+const isOpen = ref(true);
+const close = ref(false);
 
 function getCorrectAnswer(options)
 {
@@ -1817,8 +1857,122 @@ const addQuestionModal2 = ref(false);
 const handleAddQuestionModal2 = ()=>{
     addQuestionModal2.value = !addQuestionModal2.value
 }
+
+// import question excel file logic ... end file
+const openImportExcelQuestionModal = ref(false);
+const excelQuestionInputFile = ref(null)
+const importExcelFileError = ref('')
+const importExcelSet = ref(false)
+const importExcelForm = useForm({
+    subjectCodeId:'',
+    term:'',
+    excelFile:'',
+    author: user.id,
+})
+
+const handleImportButtonClicked = ()=>{
+    openImportExcelQuestionModal.value = !openImportExcelQuestionModal.value
+    addQuestionModal.value = false;
+}
+
+const handleCloseImportExcelQuestionModal = ()=>{
+    openImportExcelQuestionModal.value = false;
+    addQuestionModal.value = true;
+}
+
+
+const handleImportExcelQuestionInputFileChange = (event)=>{
+    const file = event.target.files[0];
+
+    if (file) 
+    {
+        const isValidFile = validateFile(file);
+
+        if (!isValidFile) {
+            importExcelFileError.value = 'Invalid file type. Please upload an .xlsx file.';
+            event.target.value = ''; // Clear the input
+            importExcelSet.value = false
+        } else {
+            importExcelFileError.value = ''; // Clear any previous errors
+            // Process the file (e.g., upload or read it)
+            console.log('Valid file:', file);
+            importExcelForm.excelFile = file;
+            importExcelForm.subjectCodeId = selectedSubjectCode.value.id
+            importExcelForm.term = selectedTerm.value[0]
+            importExcelSet.value = true
+        }
+    }
+
+}
+
+
+const validateFile = (file) => {
+  const allowedExtensions = /\.xlsx$/i; // Regex to check for .xlsx
+  return allowedExtensions.test(file.name);
+};
+
+const importConfirmation = (questionId)=> 
+{  
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "...",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, proceed!",
+        allowOutsideClick:false,
+        allowEscapeKey:false,
+        customClass: {
+            popup: 'swal-popup-custom' // Adding a custom class
+        }
+        }).then((result) => {
+            if(result.isConfirmed)
+            {
+                // enable loader << todo
+                importExcelForm.post(route('question.excel-import'),{
+                    onSuccess:()=>{
+                        //disable loader << todo
+                        console.log('successfully imported questions excel');
+                    }
+                })
+            }
+
+            if(result.isDismissed)
+            {
+                Swal.fire({
+                    title:'Canceled',
+                    text:'Your action was canceled!',
+                    icon:'error',
+                    confirmButtonColor: '#3085d6',
+                })   
+            }
+    });
+}  
+
+const isDownloading = ref(false);
+const downloadExcelFormat = async () => {
+  // Disable the button
+  isDownloading.value = true;
+
+  try {
+    const url = '/test_bank/Question/download/excel-format'; // Your download URL
+    // Create a temporary anchor element for the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'question_import_format.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('Download failed:', error);
+  } finally {
+    // Re-enable the button after the download process
+    isDownloading.value = false;
+  }
+};
+
 </script>
 
-<style scoped>
 
-</style>
