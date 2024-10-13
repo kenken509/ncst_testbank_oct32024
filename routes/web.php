@@ -40,6 +40,7 @@ Route::controller(UserManagementController::class)->group(function(){
 
 Route::controller(DashboardController::class)->group(function(){
     Route::get('/dashboard', 'showDashboard')->name('dashboard.show')->middleware('isCoAdmin');
+    Route::get('/dashboard/dephead', 'showDepHeadDashboard')->name('dashboard.dephead.show');
 });
 
 

@@ -41,5 +41,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    
+    public function showDepHeadDashboard(){
+        return inertia('Dashboard/Dashboard/DepHeadDashboard');
+    }
 }

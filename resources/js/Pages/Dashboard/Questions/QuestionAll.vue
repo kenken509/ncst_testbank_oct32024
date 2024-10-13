@@ -421,7 +421,7 @@
 
         <!--ADD QUESTION MODAL-->
 
-        <Dialog v-model:visible="addQuestionModal" modal :style="{ width: '80rem', height:'100vh' }">
+        <Dialog v-model:visible="addQuestionModal" modal header=" " :style="{ width: '80rem', height:'100vh' }">
             <ModalHeader :title="'New Question'"> 
                 <form @submit.prevent="submit"> 
                     <!--FORM HEADEAR-->
@@ -778,7 +778,7 @@
                     </form>
                     <button :disabled="isDownloading" class="w-full btn-primary flex items-center justify-center gap-2" @click="downloadExcelFormat" >
                         <i class="pi pi-arrow-circle-down"></i>
-                        Excel Format {{ isDownloading }}
+                        Excel Format 
                     </button>
                 </div>
             </div>
