@@ -8,22 +8,7 @@
         </div>
         <div class="flex h-full w-full justify-center items-center mt-8"> 
             <div class="w-full flex justify-between gap-2">
-                <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
-                    <div class="flex items-center gap-2">
-                        <i class="pi pi-users"></i>
-                        <span>Users</span>
-                    </div>
-                    <span class="text-[30px] font-semibold mt-4">{{ usersCount }}</span>
-                </div>
                
-                
-                <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
-                    <div class="flex items-center gap-2">
-                        <i class="pi pi-users"></i>
-                        <span>Department Heads</span>
-                    </div>
-                    <span class="text-[30px] font-semibold mt-4">{{ depHeadCount }}</span>
-                </div>
                 <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
                     <div class="flex items-center gap-2">
                         <i class="pi pi-users"></i>
@@ -90,7 +75,7 @@
                         </span>
                     </div>
                     
-                    <table class="w-full table-fixed  border-green-400">
+                    <table v-if="!hasDivisions" class="w-full table-fixed  border-green-400">
                         <thead class="bg-blue-900">
                             <tr scope="row" class="text-white w-full">
                                 <th scope="col" class="px-6 py-3">Department Name</th>
@@ -98,6 +83,7 @@
                                 <th scope="col" class="px-6 py-3">View</th>
                             </tr>
                         </thead>
+                        
                         <tbody v-for="department in emptySubjectCodes" :key="department.id"  class="rounded-md">
 
                             <tr v-if="department.subject_codes.length" scope="row text" class=" ">
@@ -111,6 +97,31 @@
                                     <i class="pi pi-eye text-blue-800 text-lg hover:text-blue-400" ></i>
                                 </td>
                             </tr>
+                        </tbody>
+                    </table>
+
+                    <table v-else class="w-full table-fixed  border-green-400">
+                        <thead class="bg-blue-900">
+                            <tr scope="row" class="text-white w-full">
+                                <th scope="col" class="px-6 py-3">Department Name</th>
+                                <th scope="col" class="px-6 py-3">Codes</th>
+                                <th scope="col" class="px-6 py-3">View</th>
+                            </tr>
+                        </thead>
+                        <!-- {{data.emptySubjectCodes[0].divisions}} -->
+                        <tbody v-for="division in data.emptySubjectCodes[0].divisions" :key="division.id"  class="rounded-md">
+                            {{ division }}
+                            <!-- <tr v-if="department.subject_codes.length" scope="row text" class=" ">
+                                <td scope="col" class="px-6 py-3 text-gray-800 border text-center">
+                                    {{department.name}}
+                                </td>
+                                <td scope="col" class="px-6 py-3 text-center text-gray-800 border">
+                                    {{department.subject_codes.length}}
+                                </td>
+                                <td scope="col" class="px-6 py-3 text-center text-gray-800 border hover:cursor-pointer" @click="handleOpenCodesModal(department.id)">
+                                    <i class="pi pi-eye text-blue-800 text-lg hover:text-blue-400" ></i>
+                                </td>
+                            </tr> -->
                         </tbody>
                     </table>
                 
@@ -143,6 +154,7 @@ import DashboardLayout from '../DashboardLayout.vue';
 import { Pie } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from 'chart.js'
 import {computed, ref} from 'vue'
+import { usePage } from '@inertiajs/vue3';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 
@@ -155,8 +167,10 @@ const data = defineProps({
     userQuestionCount:Array,
     coAdminsCount:Number,
     emptySubjectCodes:Array,
+    hasDivisions:Boolean,
 })
 
+const user = usePage();
 // Compute chart data based on props
 const chartData = computed(() => ({
   labels: ['Admins', 'Co-admins', 'Dep. Heads', 'Faculties'],
