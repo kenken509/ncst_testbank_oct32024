@@ -52,6 +52,7 @@ Route::controller(DepartmentController::class)->group(function(){
     Route::post('/test_bank/departments/store', 'storeDepartment')->name('department.store')->middleware('isAdmin');
     Route::get('/test_bank/departments/update/{id}','updateDepartmentShow')->name('department.update.show')->middleware('isAdmin');
     Route::put('/test_bank/departments/update/store', 'updateDepartment')->name('department.update')->middleware('isAdmin');
+    Route::post('/test_bank/department/import/excel', 'import')->name('department.import.excel')->middleware('isAdmin');
 });
 
 Route::controller(DivisionController::class)->group(function(){
@@ -62,6 +63,7 @@ Route::controller(DivisionController::class)->group(function(){
     Route::get('/test_bank/divisions/update/{id}', 'updateShow')->name('division.update.show')->middleware('isAdmin');
     Route::put('/test_bank/divisions/update/store', 'storeUpdate')->name('division.update.store')->middleware('isAdmin');
     Route::post('/test_bank/divisions/import/excel', 'import')->name('division.import.excel')->middleware('isAdmin');
+    Route::get('/test_bank/divisions/download/excel-format', 'downloadExcelFormat')->name('division.download.excel-format');
 });
 
 Route::controller(SubjectCodeController::class)->group(function(){

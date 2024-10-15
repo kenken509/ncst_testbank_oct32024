@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Log;
 use Exception;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ExcelDepartmentImport;
+use Illuminate\Support\Facades\Log;
 
 class DepartmentController extends Controller
 {
@@ -118,5 +120,31 @@ class DepartmentController extends Controller
             return redirect()->back()->with('error', 'Failed to update department. ');
         }
         
+    }
+
+    public function import(Request $request)
+    {
+
+       try
+       {    
+            DB::beginTransaction();
+            Excel::import(new ExcelDepartmentImport(), $request->file('file'));
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Successfully imported new Departments');
+
+       }
+       catch(\Exception $e)
+       {
+            DB::rollback();
+            Log::info('Error importing excel departments: '.$e);
+
+            return redirect()->back()->with('error', 'Failed to import Departments');
+       }
+
+       
+
+
     }
 }

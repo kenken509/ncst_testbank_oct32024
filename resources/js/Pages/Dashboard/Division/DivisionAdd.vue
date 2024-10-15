@@ -52,8 +52,12 @@
                 </div>
                 <div><hr class="border-black"></div>
                 <div class="mt-2">
-                    <button class="btn-primary w-full">Import</button>
+                    <button type="submit" class="btn-primary w-full">Import</button>
                 </div>
+                <button :disabled="isDownloading" type="button" class="w-full btn-primary flex items-center justify-center gap-2" @click="downloadExcelFormat" >
+                    <i class="pi pi-arrow-circle-down"></i>
+                    Excel Format 
+                </button>
             </form>
         </Dialog>
     </DashboardLayout>
@@ -223,5 +227,27 @@ const addConfirmation = ()=>
                 }
         });
     }  
+
+const isDownloading = ref(false);
+const downloadExcelFormat = async () => {
+  // Disable the button
+  isDownloading.value = true;
+
+  try {
+    const url = route('division.download.excel-format'); // Your download URL
+    // Create a temporary anchor element for the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'division_import_format.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('Download failed:', error);
+  } finally {
+    // Re-enable the button after the download process
+    isDownloading.value = false;
+  }
+};
 </script>
 
