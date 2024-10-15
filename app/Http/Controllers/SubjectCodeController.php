@@ -8,6 +8,8 @@ use App\Models\SubjectCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Imports\ExcelSubjectCodeImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SubjectCodeController extends Controller
 {
@@ -123,6 +125,33 @@ class SubjectCodeController extends Controller
 
             Log::error('Error deleting subject code: '.$e->getMessage());
             return redirect()->back()->with('error', 'Failed to delete subject code.');
+        }
+        
+    }
+
+    public function import(Request $request)
+    {
+       
+        try
+        {
+            DB::beginTransaction();
+            $department_id = $request->department_id;
+            $division_id = $request->division_id;
+
+            // Pass the additional variable to the import class
+            Excel::import(new ExcelSubjectCodeImport($department_id, $division_id), $request->file('file'));
+
+            DB::commit();
+
+            return redirect()->route('subject.codes.show')->with('success','Successfully imported subject codes.');
+        }
+        catch (\Exception $e)
+        {
+            DB::rollback();
+
+            Log::info('Error importing subject codes: '.$e);
+
+            return redirect()->back()->with('error', 'Excel Import Failed!');
         }
         
     }

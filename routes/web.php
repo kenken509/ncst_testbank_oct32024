@@ -70,6 +70,7 @@ Route::controller(SubjectCodeController::class)->group(function(){
     Route::post('/test_bank/subject_codes/store', 'store')->name('subject.codes.store')->middleware('isAdmin');
     Route::get('/test_bank/subject_codes/update/{id}', 'updateShow')->name('subject.codes.update.show')->middleware('isAdmin');
     Route::put('/test_bank/subject_codes/update/store', 'update')->name('subject.codes.update')->middleware('isAdmin');
+    Route::post('test_baNK/subject_codes/import', 'import')->name('subject.codes.import');
 });
 
 Route::controller(QuestionController::class)->group(function(){

@@ -50,9 +50,45 @@
                 </select> -->
                 
                 <button   type="submit" class="btn-primary " :disabled="form.processing">Save</button>
+                <button   type="Button" class="btn-primary " @click="handleopenExcelImportModalButtonClicked">Import</button>
             </div>
     </form>
     </div>
+
+    <Dialog v-model:visible="openExcelImportModal" modal header="Import Excel File" :style="{ width: '30rem' }">
+        <div><hr></div>
+        
+        <form @submit.prevent="importConfirmation">
+            <div class="flex flex-col gap-2 px-1 mt-4 border-b-2 pb-2">
+                <label for="excelInputFile" class="font-bold" >Excel File: </label>
+                <input type="file" id="excelInputFile" ref="fileInput" accept=".xlsx" @change="handleImportExcelInputChange" required>
+                <span class="text-red-500 px-1">{{ handleImportExcelError }}</span>
+            </div>
+           
+            <div >
+                <select v-model="importSelectedDepartment" class="w-full rounded-md my-1" required>
+                    <option value="" selected hidden >Select a department</option>
+                    <option v-for="dep in data.departments" :key="dep.id" :value="dep">
+                        {{ dep.name }}
+                    </option>
+                </select>
+            </div>
+            
+            <div v-if="importDepartmentHasDivision">
+               <select v-model="importSelectedDivision" class="w-full rounded-md my-1" :required="importDepartmentHasDivision">
+                    <option value="" selected hidden >Select a division</option>
+                    <option v-for="div in importSelectedDepartment.divisions" :value="div">
+                        {{ div.name }}
+                    </option>
+               </select>
+            </div>
+
+            <div>
+                <button type="submit" class="btn-primary w-full">Import</button>
+            </div>
+        </form>
+        
+    </Dialog>
 </DashboardLayout>
 
 </template>
@@ -62,6 +98,7 @@ import { useForm } from '@inertiajs/vue3';
 import DashboardLayout from '../DashboardLayout.vue';
 import {ref, watch} from 'vue'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
+
 
 
 const form = useForm({
@@ -165,4 +202,119 @@ const submitConfirmation = ()=>
         })
     }
 
+
+// import logic
+
+const importExcelForm = useForm({
+    file:'',
+    department_id:'',
+    division_id:'',
+})
+const openExcelImportModal = ref('');
+const handleopenExcelImportModalButtonClicked = ()=>{
+    openExcelImportModal.value = !openExcelImportModal.value
+}
+
+const importConfirmation = ()=> 
+{ 
+    openExcelImportModal.value = false
+    Swal.fire({
+        title: "Are you sure?",
+        text: "----",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Proceed!",
+        allowOutsideClick:false,
+        allowEscapeKey:false,
+        }).then((result) => {
+            if(result.isConfirmed)
+            {
+                // const deleteUrl = route('user.delete',{id: userId })
+
+                // router.delete(deleteUrl);
+                // file:'',
+                // department_id:'',
+                // division_id:''
+
+
+                
+
+                importExcelForm.post(route('subject.codes.import', {
+                    onSuccess:()=>{
+                        console.log('successful import');
+                    }
+                }))
+            }
+
+            if(result.isDismissed)
+            {
+                // Swal.fire({
+                //     title:'Canceled',
+                //     text:'Your action was canceled!',
+                //     icon:'error',
+                //     confirmButtonColor: '#3085d6',
+                // })
+                openExcelImportModal.value = true;
+                
+            }
+            
+    });
+} 
+    
+const fileInput = ref(null)
+const handleImportExcelError = ref('');  
+const importSelectedDepartment = ref('');  
+const importSelectedDivision = ref('');
+
+const importDepartmentHasDivision = ref(false)
+
+watch(importSelectedDepartment, (dep)=>{
+
+    importExcelForm.department_id = dep.id;
+
+    if(dep.divisions)
+    {
+        if(dep.divisions.length)
+        {
+            importDepartmentHasDivision.value = true;
+        }
+        else
+        {
+            importDepartmentHasDivision.value = false;
+        }
+    }
+    
+})
+
+watch(importSelectedDivision, (div)=>{
+    importExcelForm.division_id = div.id;
+})
+
+const handleImportExcelInputChange = (event)=>{
+    
+    const file = event.target.files[0]; // Get the first file
+    handleImportExcelError.value = ''; // Reset error message
+    
+    
+    if (file) 
+    {
+        let validExtensions = ['xls', 'xlsx'];
+        let fileExtension = file.name.split('.').pop().toLowerCase();
+
+        // Check if the file extension is valid
+        if (!validExtensions.includes(fileExtension)) 
+        {
+    
+            handleImportExcelError.value = 'Please upload a valid Excel file (.xls or .xlsx).';
+            fileInput.value.value = ''; // Reset the input
+            return;
+        }
+
+    }
+
+    importExcelForm.file = file
+
+}       
 </script>
