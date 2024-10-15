@@ -7,6 +7,8 @@ use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Imports\ExcelDivisionImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DivisionController extends Controller
 {
@@ -133,5 +135,27 @@ class DivisionController extends Controller
             return redirect()->back()-with('error', 'Failed to update division. Please try again!');
         }
         
+    }
+
+    public function import(Request $request)
+    {
+       try
+       {
+            DB::beginTransaction();
+            $departmentId = $request->department_id;
+
+            Excel::import(new ExcelDivisionImport($departmentId), $request->file('file'));
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Successfully imported new Divisions.');
+       }
+       catch(\Exception $e)
+       {
+            DB::rollback();
+
+            Log::info('error importing divisions: '.$e);
+
+            return redirect()->back()->with('error','Failed to import Divisions.');
+       }
     }
 }

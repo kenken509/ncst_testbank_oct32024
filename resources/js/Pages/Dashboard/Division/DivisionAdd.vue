@@ -27,9 +27,35 @@
                     </select>
                     
                     <button  type="submit" class="btn-primary ">Save</button>
+                    <button   type="Button" class="btn-primary " @click="handleopenExcelImportModalButtonClicked">Import Excel File</button>
                 </div>
             </form>
         </div>
+
+        <Dialog v-model:visible="openExcelImportModal" modal header="Import Excel File" :style="{ width: '30rem' }">
+            <div ><hr class="border-black"></div>
+           
+            <form @submit.prevent="importConfirmation">
+                <div class="my-2 space-y-2">
+                    <label class="font-bold" for="department">Department: </label>
+                    <select v-model="importExcelSelectedDepartment" class="w-full border-blue-300 rounded-md hover:cursor-pointer" id="department" required>
+                        <option value="" hidden selected>Please select department</option>
+                        <option v-for="dep in data.existingDepartment" :key="dep.id" :value="dep">
+                            {{ dep.name }}
+                        </option>
+                    </select>
+                </div>
+                <div class="flex flex-col my-2 space-y-2">
+                    <label class="font-bold" for="excelFile">Excel File: </label>
+                    <input type="file" id="excelFile" ref="fileInput" accept=".xlsx" @change="handleExcelInputFileChange" required/>
+                    <span v-if="handleImportExcelError" class="text-red-500">{{ handleImportExcelError }}</span>
+                </div>
+                <div><hr class="border-black"></div>
+                <div class="mt-2">
+                    <button class="btn-primary w-full">Import</button>
+                </div>
+            </form>
+        </Dialog>
     </DashboardLayout>
 </template>
 
@@ -117,5 +143,85 @@ const addConfirmation = ()=>
             }
         })
     }
+
+    // import logic
+
+    const importExcelForm = useForm({
+        file:'',
+        department_id:'',
+    })
+    const openExcelImportModal = ref(false);
+    const importExcelSelectedDepartment = ref('');
+    const handleopenExcelImportModalButtonClicked = ()=>{
+        openExcelImportModal.value = !openExcelImportModal.value
+    }
+
+    const handleImportExcelError = ref('')
+    const fileInput = ref(null)
+    const handleExcelInputFileChange = (event)=>{
+        const file = event.target.files[0]; // Get the first file
+        handleImportExcelError.value = ''; // Reset error message
+        
+        
+        if (file) 
+        {
+            let validExtensions = ['xls', 'xlsx'];
+            let fileExtension = file.name.split('.').pop().toLowerCase();
+
+            // Check if the file extension is valid
+            if (!validExtensions.includes(fileExtension)) 
+            {
+                handleImportExcelError.value = 'Please upload a valid Excel file (.xls or .xlsx).';
+                fileInput.value.value = ''; // Reset the input
+                return;
+            }
+
+        }
+
+        importExcelForm.file = file
+
+    }
+
+    watch(importExcelSelectedDepartment, (dep)=>{
+        
+        importExcelForm.department_id = dep.id;
+    })
+
+    const importConfirmation = ()=> 
+    { 
+        openExcelImportModal.value = false;
+        Swal.fire({
+            title: "Are you sure?",
+            text: "-----",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, save it!",
+            allowOutsideClick:false,
+            allowEscapeKey:false,
+            }).then((result) => {
+                if(result.isConfirmed)
+                {
+                   importExcelForm.post(route('division.import.excel'), {
+                        onSuccess:()=>{
+                            console.log('successful excel import');
+                        }
+                   })
+                }
+
+                if(result.isDismissed)
+                {
+                    // Swal.fire({
+                    //     title:'Canceled',
+                    //     text:'Your action was canceled!',
+                    //     icon:'error',
+                    //     confirmButtonColor: '#3085d6',
+                    // })
+                    openExcelImportModal.value = false
+                    importExcelSelectedDepartment.value = '';
+                }
+        });
+    }  
 </script>
 

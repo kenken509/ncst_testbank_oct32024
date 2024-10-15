@@ -50,23 +50,18 @@
                 </select> -->
                 
                 <button   type="submit" class="btn-primary " :disabled="form.processing">Save</button>
-                <button   type="Button" class="btn-primary " @click="handleopenExcelImportModalButtonClicked">Import</button>
+                <button   type="Button" class="btn-primary " @click="handleopenExcelImportModalButtonClicked">Import Excel File</button>
             </div>
     </form>
     </div>
 
     <Dialog v-model:visible="openExcelImportModal" modal header="Import Excel File" :style="{ width: '30rem' }">
-        <div><hr></div>
+        <div><hr class="border-black"></div>
         
         <form @submit.prevent="importConfirmation">
-            <div class="flex flex-col gap-2 px-1 mt-4 border-b-2 pb-2">
-                <label for="excelInputFile" class="font-bold" >Excel File: </label>
-                <input type="file" id="excelInputFile" ref="fileInput" accept=".xlsx" @change="handleImportExcelInputChange" required>
-                <span class="text-red-500 px-1">{{ handleImportExcelError }}</span>
-            </div>
-           
-            <div >
-                <select v-model="importSelectedDepartment" class="w-full rounded-md my-1" required>
+            <div class="mt-2" >
+                <label for="department" class="font-bold" >Department : </label>
+                <select v-model="importSelectedDepartment" id="department" class="w-full rounded-md my-1" required>
                     <option value="" selected hidden >Select a department</option>
                     <option v-for="dep in data.departments" :key="dep.id" :value="dep">
                         {{ dep.name }}
@@ -75,17 +70,29 @@
             </div>
             
             <div v-if="importDepartmentHasDivision">
-               <select v-model="importSelectedDivision" class="w-full rounded-md my-1" :required="importDepartmentHasDivision">
+                <label for="division" class="font-bold" >Division : </label>
+               <select v-model="importSelectedDivision" for="division" class="w-full rounded-md my-1" :required="importDepartmentHasDivision">
                     <option value="" selected hidden >Select a division</option>
                     <option v-for="div in importSelectedDepartment.divisions" :value="div">
                         {{ div.name }}
                     </option>
                </select>
             </div>
-
-            <div>
+            <div class="flex flex-col gap-2  mt-2  ">
+                <label for="excelInputFile" class="font-bold" >Excel File: </label>
+                <input type="file" id="excelInputFile" ref="fileInput" accept=".xlsx" @change="handleImportExcelInputChange" required>
+                <span class="text-red-500 px-1">{{ handleImportExcelError }}</span>
+            </div>
+           
+            
+            <div class="my-2"><hr class="border-black "></div>
+            <div class="mt-2">
                 <button type="submit" class="btn-primary w-full">Import</button>
             </div>
+            <button :disabled="isDownloading" type="button" class="w-full btn-primary flex items-center justify-center gap-2" @click="downloadExcelFormat" >
+                <i class="pi pi-arrow-circle-down"></i>
+                Excel Format 
+            </button>
         </form>
         
     </Dialog>
@@ -317,4 +324,27 @@ const handleImportExcelInputChange = (event)=>{
     importExcelForm.file = file
 
 }       
+
+//download excel format
+const isDownloading = ref(false);
+const downloadExcelFormat = async () => {
+  // Disable the button
+  isDownloading.value = true;
+
+  try {
+    const url = route('subject.codes.excel-format'); // Your download URL
+    // Create a temporary anchor element for the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'subject_code_import_format.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('Download failed:', error);
+  } finally {
+    // Re-enable the button after the download process
+    isDownloading.value = false;
+  }
+};
 </script>

@@ -8,8 +8,9 @@ use App\Models\SubjectCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Imports\ExcelSubjectCodeImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ExcelSubjectCodeImport;
+use Illuminate\Support\Facades\Storage;
 
 class SubjectCodeController extends Controller
 {
@@ -154,5 +155,23 @@ class SubjectCodeController extends Controller
             return redirect()->back()->with('error', 'Excel Import Failed!');
         }
         
+    }
+
+    public function downloadExcelFormat()
+    {
+        
+        $filePath = '/excel_format/subject_code_import_format.xlsx';
+
+        if (Storage::disk('public')->exists($filePath)) {
+            Log::info('download excel format successfully!!!');
+            return Storage::disk('public')->download($filePath);
+        }
+        else
+        {
+            Log::info('download excel format not exist!!!');
+        }
+
+        
+        return abort(404); // Return 404 if the file doesn't exist
     }
 }
