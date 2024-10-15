@@ -179,7 +179,7 @@
                             
 
                                 
-                                <th  v-if="isAdmin || isDepHead" scope="col" class="flex justify-center px-6 py-3">Action</th>
+                                <th  v-if="isAdmin || isDepHead || $page.props.user.role === 'co-admin'" scope="col" class="flex justify-center px-6 py-3">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -207,9 +207,9 @@
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     {{ formatDate(question.created_at) }}
                                 </th>
+                                
                             
-                            
-                                <td  v-if="$page.props.user.role === 'admin' || $page.props.user.role === 'department head'" class="px-6 py-4 text-center ">
+                                <td  v-if="$page.props.user.role === 'admin' || $page.props.user.role === 'department head' || $page.props.user.role === 'co-admin'"  class="px-6 py-4 text-center ">
                                     <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
                                         <button @click="showQuestionInfoModal(question)" class="btn-primary p-2">Info</button>
                                         <button  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>

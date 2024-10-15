@@ -49,8 +49,9 @@ class DashboardController extends Controller
         $userDepId = $user->department_id;
         
         $department = Department::where('id', $userDepId)->with('divisions')->first();
+        $totalSubjectCodes = Department::where('id', $userDepId)->withCount('subjectCodes')->get();
         $hasDivision = false;
-        
+
         if(count($department->divisions))
         {
             $emptySubjectCodes = Department::where('id', $userDepId)->with(['divisions' => function ($query){
@@ -58,6 +59,9 @@ class DashboardController extends Controller
                     $query->whereDoesntHave('questions');
                 }]);
             }])->get();
+            
+            
+
             
             //dd($emptySubjectCodes);
             $hasDivision = true;
@@ -83,7 +87,7 @@ class DashboardController extends Controller
                             ->get();
 
        
-
+       
         
 
         return inertia('Dashboard/Dashboard/DepHeadDashboard',[
@@ -92,6 +96,7 @@ class DashboardController extends Controller
             'userQuestionCount'     => $userQuestionCount,
             'emptySubjectCodes'     => $emptySubjectCodes,
             'hasDivisions'          => $hasDivision,
+            'totalSubjectCodes'     => $totalSubjectCodes,
         ]);
     }
 }

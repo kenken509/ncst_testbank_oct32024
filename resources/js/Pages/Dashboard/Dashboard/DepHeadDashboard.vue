@@ -19,9 +19,16 @@
                 <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
                     <div class="flex items-center gap-2">
                         <i class="pi pi-question-circle"></i>
-                        <span>Total No. of Questions</span>
+                        <span> Questions</span>
                     </div>
                     <span class="text-[30px] font-semibold mt-4">{{ questionsCount }}</span>
+                </div>
+                <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-question-circle"></i>
+                        <span>Subject Codes</span>
+                    </div>
+                    <span class="text-[30px] font-semibold mt-4 ">{{ totalSubjectCodes[0].subject_codes_count }}</span>
                 </div>
             </div>
         </div>
@@ -99,40 +106,56 @@
                             </tr>
                         </tbody>
                     </table>
-
+                    
                     <table v-else class="w-full table-fixed  border-green-400">
                         <thead class="bg-blue-900">
                             <tr scope="row" class="text-white w-full">
-                                <th scope="col" class="px-6 py-3">Department Name</th>
+                                <th scope="col" class="px-6 py-3">Course </th>
                                 <th scope="col" class="px-6 py-3">Codes</th>
                                 <th scope="col" class="px-6 py-3">View</th>
                             </tr>
                         </thead>
+                       
                         <!-- {{data.emptySubjectCodes[0].divisions}} -->
                         <tbody v-for="division in data.emptySubjectCodes[0].divisions" :key="division.id"  class="rounded-md">
-                            {{ division }}
-                            <!-- <tr v-if="department.subject_codes.length" scope="row text" class=" ">
+                           
+                            <tr  scope="row text" class=" ">
                                 <td scope="col" class="px-6 py-3 text-gray-800 border text-center">
-                                    {{department.name}}
+                                    {{division.name}}
                                 </td>
                                 <td scope="col" class="px-6 py-3 text-center text-gray-800 border">
-                                    {{department.subject_codes.length}}
+                                   <span v-if="division.div_subject_codes.length">
+                                        {{ division.div_subject_codes.length }}
+                                   </span>
+                                   <span v-else class="text-red-500">--</span>
                                 </td>
-                                <td scope="col" class="px-6 py-3 text-center text-gray-800 border hover:cursor-pointer" @click="handleOpenCodesModal(department.id)">
+                                <td scope="col" class="px-6 py-3 text-center text-gray-800 border hover:cursor-pointer" @click="handleOpenCodesModalWithDivision(division.id)">
                                     <i class="pi pi-eye text-blue-800 text-lg hover:text-blue-400" ></i>
                                 </td>
-                            </tr> -->
+                            </tr>
                         </tbody>
+                        
                     </table>
                 
                 
             </div>
            
 
-            <Dialog v-model:visible="openCodesModal" modal header=" Empty Codes List" title="Empty Codes List" :style="{ width: '20rem'}">
+            <Dialog v-model:visible="openCodesModal" modal header=" Empty Codes List"  :style="{ width: '20rem'}">
                 <div><hr></div>
                 
                 <div v-for="(code, index) in selectedDepartmentCodeList[0].subject_codes" :key="index" class="mt-4">
+                    <span>{{ index+1 }} . &nbsp;</span>
+                    <span>
+                        {{ code.name }}
+                    </span>
+                </div>
+            </Dialog>
+
+            <Dialog v-model:visible="openCodesModalDivision" modal header=" Empty Codes List"  :style="{ width: '20rem'}">
+                <div><hr></div>
+                
+                <div v-for="(code, index) in selectedDivisionCodeList[0].div_subject_codes" :key="index" class="mt-4">
                     <span>{{ index+1 }} . &nbsp;</span>
                     <span>
                         {{ code.name }}
@@ -168,6 +191,7 @@ const data = defineProps({
     coAdminsCount:Number,
     emptySubjectCodes:Array,
     hasDivisions:Boolean,
+    totalSubjectCodes:Array,
 })
 
 const user = usePage();
@@ -209,9 +233,18 @@ const chartOptions = computed(() => ({
 const openCodesModal = ref(false)
 const selectedDepartmentCodeList = ref([]);
 const handleOpenCodesModal = (id)=>{
+    
     openCodesModal.value = !openCodesModal.value
-    selectedDepartmentCodeList.value = data.emptySubjectCodes.filter((dep)=> dep.id === id);
+    selectedDepartmentCodeList.value = data.emptySubjectCodes.filter((div)=> div.id === id);
 
-    //console.log(selectedDepartmentCodeList.value)
+    
+}
+
+const selectedDivisionCodeList = ref([]);
+const openCodesModalDivision = ref(false)
+const handleOpenCodesModalWithDivision = (id)=>{
+    openCodesModalDivision.value = !openCodesModalDivision.value
+    
+    selectedDivisionCodeList.value = data.emptySubjectCodes[0].divisions.filter((div) => div.id === id)
 }
 </script>
