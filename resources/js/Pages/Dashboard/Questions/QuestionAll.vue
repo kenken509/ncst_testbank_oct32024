@@ -604,8 +604,8 @@
                 {{ announcementMessage()}}
          </div>
          
-         <!--test newModal question add-->
-         <Dialog v-model:visible="addQuestionModal2"  modal header=" " :style="{ width: '60rem', height:'80vh' }" > <!--working 2 addQuestionModal-->
+         <!--test newModal question add v-model:visible="addQuestionModal2" --> 
+         <Dialog v-model:visible="addQuestionModal2" modal header=" " :style="{ width: '60rem', height:'80vh' }" > <!--working 2 addQuestionModal-->
             <!--header-->
             <div class="w-full border flex justify-between items-center  bg-blue-900 p-4 pl-2 pr-4 rounded-tl-md rounded-tr-md">
                 <div class="flex  items-center gap-2">
@@ -658,7 +658,7 @@
                             <div>
                                 <textarea v-model="form.question" cols="50" rows="3" class="w-full rounded-md" placeholder="Type your question here." required></textarea>
                             </div>
-                            <div class="flex justify-center items-center lg:justify-start  mt-auto   h-[450px] ">
+                            <div class="flex justify-center items-center lg:justify-start     h-[450px] ">
                                 <div class="flex flex-col w-[160px] h-[100px]  items-center justify-center gap-1 "> 
                                     <img :src="attachedImagePreviewUrl || (imageUrl + 'image_attachment.png') " alt="Image attachment" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]"/>
                                     <input @change="handleAttachedImageChange"  type="file" ref="fileInput" accept=".jpg, .jpeg" hidden/>
@@ -741,11 +741,24 @@
                     <div class="mt-12">
                         <button type="submit" class="bg-blue-800 hover:bg-blue-700 rounded-md w-full p-2 text-gray-100"  :disabled="form.processing">Submit</button>
                     </div>
+                    <div class="mt-2">
+                        <button type="button" class="bg-blue-800 hover:bg-blue-700 rounded-md w-full p-2 text-gray-100"  @click="handleImportButtonClicked">Import</button>
+                    </div>
                 </form>
             </div>
 
 
          </Dialog>
+         <!--test newModal question add-->
+
+         <!-- <div v-if="addQuestionModal2" id="myModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
+                <span id="closeModal" class="cursor-pointer text-gray-500 hover:text-gray-800 float-right">&times;</span>
+                <h2 class="text-xl font-semibold mb-4">Modal Title</h2>
+                <p class="mb-4">This is a simple modal example using Tailwind CSS.</p>
+                <button id="modalAction" class="bg-blue-500 text-white px-4 py-2 rounded">Action</button>
+            </div>
+        </div> -->
 
          <!--import excel file modal-->
          <!-- <Dialog v-model:visible="openImportExcelQuestionModal" modal header="Import Excel File" :style="{ width: '30rem',  }" >

@@ -428,7 +428,7 @@
                     <div class="flex flex-col md:flex-row md:justify-between w-full mb-2 mt-4">
                         <div class="w-full" >
                             <div class="flex w-full flex-col md:items-center  md:flex-row gap-2">
-                                <span class="w-full font-semibold text-lg py-2 max-w-[150px] " >Subject Code : </span>
+                                <span class="w-full font-semibold text-lg py-2 max-w-[150px] " >Subject Codes : </span>
                                 <input  class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2"  :placeholder="selectedSubjectCode.name" disabled/>
                             </div>
                         </div>
