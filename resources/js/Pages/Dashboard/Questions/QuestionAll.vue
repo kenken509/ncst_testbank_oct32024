@@ -26,7 +26,7 @@
                             <option value="" selected hidden>
                                 Subject Code 
                             </option>
-                            <option v-for="code in data.subjectCodes" :value="code">
+                            <option  v-for="code in data.subjectCodes" :value="code">
                                 {{ code.name }}
                             </option>
                         </select>
@@ -79,7 +79,7 @@
                     </div>
                     <div class=" flex w-full gap-2 col-span-3" ><!--andito ako 1-->
                         <button @click="handleProblemSetButtonClicked"  type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
-                        <button @click="handleAddQuestionModal" type="button" class="btn-primary p-2 w-full">+ New</button> <!-- debugging-->
+                        <button @click="handleAddQuestionModal2" type="button" class="btn-primary p-2 w-full">+ New</button> <!-- debugging-->
                     </div>
                     
                 </div>
@@ -179,7 +179,7 @@
                             
 
                                 
-                                <th  v-if="isAdmin || isDepHead || $page.props.user.role === 'co-admin'" scope="col" class="flex justify-center px-6 py-3">Action</th>
+                                <th   scope="col" class="flex justify-center px-6 py-3">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -209,11 +209,11 @@
                                 </th>
                                 
                             
-                                <td  v-if="$page.props.user.role === 'admin' || $page.props.user.role === 'department head' || $page.props.user.role === 'co-admin'"  class="px-6 py-4 text-center ">
+                                <td   class="px-6 py-4 text-center ">
                                     <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
                                         <button @click="showQuestionInfoModal(question)" class="btn-primary p-2">Info</button>
-                                        <button  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>
-                                        <Link :href="route('question.update.show',{id:question.id})" type="button" class="btn-success my-2">
+                                        <button v-if="$page.props.user.role !== 'faculty'"  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>
+                                        <Link  v-if="$page.props.user.role !== 'faculty'" :href="route('question.update.show',{id:question.id})" type="button" class="btn-success my-2">
                                             Update
                                         </Link>
                                     </div>
@@ -249,7 +249,7 @@
                                 
 
                                 
-                                <th  v-if="isAdmin" scope="col" class="flex justify-center px-6 py-3">Action</th>
+                                <th   scope="col" class="flex justify-center px-6 py-3">Action</th>
                             </tr>
                         </thead>
                         <tbody >
@@ -279,11 +279,11 @@
                                 </th>
                             
                             
-                                <td  v-if="$page.props.user.role === 'admin' || $page.props.user.role === 'department head'" class="px-6 py-4 text-center ">
+                                <td   class="px-6 py-4 text-center ">
                                     <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
                                         <button @click="showQuestionInfoModal(question)" class="btn-primary p-2">Info</button>
-                                        <button  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>
-                                        <Link :href="route('question.update.show',{id:question.id})" type="button" class="btn-success my-2">
+                                        <button v-if="$page.props.user.role === 'admin' || $page.props.user.role === 'department head'"  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>
+                                        <Link  v-if="$page.props.user.role === 'admin' || $page.props.user.role === 'department head'":href="route('question.update.show',{id:question.id})" type="button" class="btn-success my-2">
                                             Update
                                         </Link>
                                     </div>
@@ -605,12 +605,12 @@
          </div>
          
          <!--test newModal question add v-model:visible="addQuestionModal2" --> 
-         <Dialog v-model:visible="addQuestionModal2" modal header=" " :style="{ width: '60rem', height:'80vh' }" > <!--working 2 addQuestionModal-->
+         <Dialog v-model:visible="addQuestionModal2" modal header=" " :style="{ width: '60rem', height:'72vh' }" > <!--working 2 addQuestionModal-->
             <!--header-->
             <div class="w-full border flex justify-between items-center  bg-blue-900 p-4 pl-2 pr-4 rounded-tl-md rounded-tr-md">
                 <div class="flex  items-center gap-2">
                     <img :src="logoUrl" alt="error" class=" w-16 h-16">
-                    <span class="text-gray-100 text-xl">{{ title }}</span>
+                    <span class="text-gray-100 text-xl">New Question</span>
                 </div>
                 <div class="flex  flex-col hidden md:block ">
                     <div class="flex justify-end text-[30px] text-gray-100">
@@ -621,23 +621,21 @@
                     </div>
                 </div>
             </div>
-            <!--header-->
-
-            
+            <!--header-->  
             <div class="">
                 <form @submit.prevent="submit"  > 
                     <!--FORM HEADEAR-->
-                    <div class="flex flex-col md:flex-row md:justify-between w-full mb-2 mt-4 ">
+                    <div class="flex flex-col md:flex-row md:justify-between w-full mb-2 mt-2 ">
                         <div class="w-full" >
                             <div class="flex w-full flex-col md:items-center  md:flex-row gap-2">
-                                <span class="w-full font-semibold lg:text-md py-2 max-w-[150px] " >Subject Code : </span>
-                                <input  class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[30px]"  :placeholder="selectedSubjectCode.name" disabled/>
+                                <span class="w-full font-semibold text-sm py-2 max-w-[150px] " >Subject Code : </span>
+                                <input  class="rounded-sm border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[24px] text-sm placeholder:text-black"  :placeholder="selectedSubjectCode.name" disabled/>
                             </div>
                         </div>
                         <div class="w-full  flex  md:justify-end ">
                             <div class="flex w-full justify-end  flex-col md:items-center  md:flex-row gap-2 ">
-                                <span class="font-semibold text-md py-2  " >Term : </span>
-                                <input v-model="form.term" class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[30px]"  :placeholder="selectedTerm" disabled/>
+                                <span class="font-semibold text-sm py-2  " >Term : </span>
+                                <input v-model="form.term" class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[24px] text-sm placeholder:text-black"  :placeholder="selectedTerm" disabled/>
                             </div>
                         </div>
             
@@ -645,14 +643,14 @@
                     
                     <div class=" flex w-full mb-2 flex-col lg:flex-row ">
                         <div class="flex w-full flex-col md:items-center  md:flex-row gap-2">
-                            <span class="w-full font-semibold text-lg py-2 max-w-[150px] lg:text-md" >Description : </span>
-                            <input  class="w-full rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[30px]"  :placeholder="selectedSubjectCode.description" disabled/>
+                            <span class="w-full font-semibold text-sm py-2 max-w-[150px] lg:text-md" >Description : </span>
+                            <input  class="w-full rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2 lg:h-[24px] text-sm placeholder:text-black"  :placeholder="selectedSubjectCode.description" disabled/>
                         </div>
                     </div>
-                    <hr class="border-gray-400  mb-4">
+                    <hr class="border-gray-400  mb-6">
                     <!--FORM HEADEAR-->
 
-                    <div class="flex flex-col lg:flex-row gap-2  h-full lg:h-[300px]">
+                    <div class="flex flex-col lg:flex-row gap-2  h-full lg:h-[280px] ">
                         <!--left container-->
                         <div class="w-full lg:w-[60%]  border flex flex-col border-gray-900 p-2 rounded-md shadow-md ">
                             <div>
@@ -673,7 +671,7 @@
                         <!--right container-->
                         <div class="w-full lg:w-[40%] border flex flex-col rounded-md border-gray-900  shadow-md ">
                             <div class="flex flex-col flex-grow w-full  " >
-                                <div v-if="textTab" class=" flex-grow border-b-2 border-gray-300 rounded-b-md shadow-sm p-2 h-[300px]">
+                                <div v-if="textTab" class=" flex-grow border-b-2 border-gray-300 rounded-b-md shadow-sm p-2 h-[242px] ">
                                     <div v-for="(option,index) in options" :key="index" class="flex items-center gap-2 py-2 " >
                                         <input 
                                         type="radio" 
@@ -684,16 +682,16 @@
                                         @change="markCorrectOption(index)"
                                         :required="textTab"
                                         />
-                                        <textarea v-model="options[index].option" cols="10" rows="2" class="w-full max-h-[54px] text-[10px]" :required="textTab"></textarea>
+                                        <textarea v-model="options[index].option" cols="10" rows="1" class="w-full max-h-[54px] text-sm" :required="textTab"></textarea>
                                     </div>
                                 </div>
                                 <div v-if="imageTab" class=" flex-grow border-b-2 border-gray-300 rounded-b-md shadow-sm p-2 z-0 ">
                                     <div class="grid grid-cols-2  ">
                                         <div  class="col-span-2 lg:col-span-1 flex items-center justify-center  p-1   ">
-                                            <input v-model="selectedOption" type="radio"  id="image_opton_0" name="image_options" value="0" @change="markCorrectOption(0)"  />
+                                            <input class="" v-model="selectedOption" type="radio"  id="image_opton_0" name="image_options" value="0" @change="markCorrectOption(0)"  />
                                             <div class="flex justify-center items-center flex-col ml-2">
                                                 <input  @change="handleImageOptionFileChange_0"  type="file" hidden ref="imageOption_0" accept=".jpg, .jpeg" />                               
-                                                <img  :src="imageOptionURL_0 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]"/>
+                                                <img  :src="imageOptionURL_0 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[70px] max-h-[70px]"/>
                                                 <button @click="triggerImageOptionsFileInput(0)" type="button" class="bg-gray-200 hover:bg-gray-300 p-1 mt-2 border border-gray-800 rounded-md w-[100px] text-[10px]">Add Image</button>
                                                 
                                             </div>
@@ -703,7 +701,7 @@
                                             <input v-model="selectedOption" type="radio"  id="image_opton_1" name="image_options" value="1" accept=".jpg, .jpeg" @change="markCorrectOption(1)"/>
                                             <div class="flex  items-center flex-col ml-2">
                                                 <input @change="handleImageOptionFileChange_1" type="file" hidden ref="imageOption_1"   />                               
-                                                <img :src="imageOptionURL_1 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-mdmax-w-[100px] max-h-[100px]"/>
+                                                <img :src="imageOptionURL_1 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-mdmax-w-[70px] max-h-[70px]"/>
                                                 <button @click="triggerImageOptionsFileInput(1)" type="button" class="bg-gray-200 hover:bg-gray-300 p-1 mt-2 border border-gray-800 rounded-md w-[100px] text-[10px]">Add Image</button>
                                             </div>
                                         </div> 
@@ -712,7 +710,7 @@
                                             <input v-model="selectedOption" type="radio"  id="image_opton_2" name="image_options" value="2"  accept=".jpg, .jpeg" @change="markCorrectOption(2)" />
                                             <div class="flex  items-center flex-col ml-2">
                                                 <input @change="handleImageOptionFileChange_2" type="file" hidden ref="imageOption_2"   />                               
-                                                <img :src="imageOptionURL_2 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]"/>
+                                                <img :src="imageOptionURL_2 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[70px] max-h-[70px]"/>
                                                 <button @click="triggerImageOptionsFileInput(2)" type="button" class="bg-gray-200 hover:bg-gray-300 p-1 mt-2 border border-gray-800 rounded-md w-[100px] text-[10px]">Add Image</button>
                                             </div>
                                         </div> 
@@ -721,24 +719,25 @@
                                             <input v-model="selectedOption" type="radio"  id="image_opton_3" name="image_options" value="3" accept=".jpg, .jpeg"  @change="markCorrectOption(3)"/>
                                             <div class="flex  items-center flex-col ml-2">
                                                 <input @change="handleImageOptionFileChange_3" type="file" hidden ref="imageOption_3"   />                               
-                                                <img :src="imageOptionURL_3 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[100px] max-h-[100px]" />
+                                                <img :src="imageOptionURL_3 || imageUrl+'no_image.png'" alt="Image option" class="border border-gray-400 rounded-md shadow-md max-w-[70px] max-h-[70px]" />
                                                 <button @click="triggerImageOptionsFileInput(3)" type="button" class="bg-gray-200 hover:bg-gray-300 p-1 mt-2 border border-gray-800 rounded-md w-[100px] text-[10px]">Add Image</button>
                                             </div>
                                         </div> 
                                     </div>
                                 </div>
-                                <div class="ml-6 mb-2">
-                                    <button type="button" @click="textTabClicked" class=" p-2 border border-t-0 border-gray-400 rounded-bl-lg  hover:font-bold hover:text-gray-400 " :class="{'bg-blue-800 text-white hover:text-gray-100 hover:font-normal': textTab, 'bg-gray-200 ': !textTab}">Text</button>
-                                    <button type="button" @click="imageTabClicked" class="p-2 border border-t-0 border-gray-400 rounded-br-lg  hover:font-bold hover:text-gray-400 " :class="{'bg-blue-800 text-white hover:text-gray-100 hover:font-normal': imageTab, 'bg-gray-200 ': !imageTab}">Image</button>
-                                    <div>
-                                        <span class="text-red-500">{{ imageOptionValidator }}</span> 
-                                    </div>
+                                <div class="ml-6 mb-2 ">
+                                    <button type="button" @click="textTabClicked" class=" p-1 border border-t-0 border-gray-400 rounded-bl-lg  hover:font-bold hover:text-gray-400 " :class="{'bg-blue-800 text-white hover:text-gray-100 hover:font-normal': textTab, 'bg-gray-200 ': !textTab}">Text</button>
+                                    <button type="button" @click="imageTabClicked" class="p-1 border border-t-0 border-gray-400 rounded-br-lg  hover:font-bold hover:text-gray-400 " :class="{'bg-blue-800 text-white hover:text-gray-100 hover:font-normal': imageTab, 'bg-gray-200 ': !imageTab}">Image</button>
+                                    
                                 </div>
+                            </div>
+                            <div>
+                                <span class="text-red-500">{{ imageOptionValidator }}</span> 
                             </div>
                         </div>                        
                         <!--right container-->
                     </div>
-                    <div class="mt-12">
+                    <div class="mt-10">
                         <button type="submit" class="bg-blue-800 hover:bg-blue-700 rounded-md w-full p-2 text-gray-100"  :disabled="form.processing">Submit</button>
                     </div>
                     <div class="mt-2">
@@ -1721,7 +1720,8 @@ const handleImageOptionFileChange_3 = (event) => {
 // form submission
 
 const submit = ()=>{
-    // validate text options if form.type = 'text'
+    // validate text options if form.type = 'text'  working here
+    
     if(form.type === 'text')
     {
         form.options = options
@@ -1768,7 +1768,8 @@ const successAlertCounter = ref('')
 const submitConfirmation = ()=> 
     { 
         
-        addQuestionModal.value = false
+        //addQuestionModal.value = false
+        addQuestionModal2.value = false
         successAlertCounter.value++
         Swal.fire({
             title: "Are you sure?",
@@ -1803,7 +1804,8 @@ const submitConfirmation = ()=>
                         confirmButtonColor: '#3085d6',
                     }).then((res)=>{
                        
-                        addQuestionModal.value = true
+                        //addQuestionModal.value = true
+                        addQuestionModal2.value = true
                     })
                 }
         });
