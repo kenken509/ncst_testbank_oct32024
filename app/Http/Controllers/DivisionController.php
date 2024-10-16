@@ -172,7 +172,7 @@ class DivisionController extends Controller
         {
             Log::info('download excel format not exist!!!');
         }
-
+        
         
         return abort(404); // Return 404 if the file doesn't exist
     }

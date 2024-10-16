@@ -7,9 +7,10 @@ use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ExcelDepartmentImport;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DepartmentController extends Controller
 {
@@ -146,5 +147,22 @@ class DepartmentController extends Controller
        
 
 
+    }
+
+    public function downloadExcelFormat()
+    {
+        $filePath = '/excel_format/department_import_format.xlsx';
+
+        if (Storage::disk('public')->exists($filePath)) {
+            Log::info('download excel format successfully!!!');
+            return Storage::disk('public')->download($filePath);
+        }
+        else
+        {
+            Log::info('download excel format not exist!!!');
+        }
+
+        
+        return abort(404); // Return 404 if the file doesn't exist
     }
 }

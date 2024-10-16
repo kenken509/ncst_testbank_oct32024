@@ -109,8 +109,28 @@
             </div>
             <div class="mt-4 relative">
                 <form @submit.prevent="submitImportExcel">
-                    <div class="pb-2">
-                        <input  type="file" ref="fileInput" accept=".xls, .xlsx" @change="handleImportExcelFileChange"/>
+                    <div class="pb-2 flex flex-col space-y-2">
+                        
+                        <label class="font-bold" for="depSelect">Department: </label>
+                        <select v-model="importUserSelectedDepartment"  class="rounded-lg hover:cursor-pointer" id="depSelect" required>
+                            <option value="" hidden selected>Select a department</option>
+                            <option v-for="dep in data.departments" :key="dep.id" :value="dep">
+                                {{ dep.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="pb-2 flex flex-col space-y-2" v-if="importUserHasDivision">
+                        <label class="font-bold">Division:</label>
+                        <select v-model="importUserSelectedDivision"  class="rounded-lg hover:cursor-pointer w-full" :required="importUserHasDivision">
+                            <option value="" hidden selected>Select a division</option>
+                            <option v-for="div in importUserSelectedDepartment.divisions" :value="div">
+                                {{ div.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="pb-2 flex flex-col space-y-2">
+                        <label class="font-bold">Excel File: </label>
+                        <input  type="file" ref="fileInput" accept=".xls, .xlsx" @change="handleImportExcelFileChange" required/>
                     </div>
                     
                     <div>
@@ -401,9 +421,12 @@ function successMessage(message)
     importModalOpen.value = !importModalOpen.value
   }
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const handleImportExcelError = ref('')
 const fileInput = ref(null); // Reference to the file input
 const importExcelForm = useForm({
+    department_id:'',
+    division_id:'',
     file:null,
 })
 const handleImportExcelFileChange = (event)=> 
@@ -439,8 +462,30 @@ const submitImportExcel = ()=> {
     importExcelForm.post(route('user.import.excel'),{
         onSuccess: ()=>{
             isLoading.value = false;
+            importModalOpen.value = false;
         }
     })
 }
   
+const importUserSelectedDepartment = ref('');
+const importUserSelectedDivision = ref('');
+
+const importUserHasDivision = ref(false)
+watch(importUserSelectedDepartment, (dep)=>{
+
+    if(dep.divisions.length)
+    {
+       importUserHasDivision.value = true; 
+    }
+    else
+    {
+        importUserHasDivision.value = false
+    }
+
+    importExcelForm.department_id = dep.id
+}) 
+ 
+ watch(importUserSelectedDivision,(div)=>{
+    importExcelForm.division_id = div.id
+ })
 </script>

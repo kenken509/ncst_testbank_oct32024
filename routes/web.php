@@ -53,6 +53,7 @@ Route::controller(DepartmentController::class)->group(function(){
     Route::get('/test_bank/departments/update/{id}','updateDepartmentShow')->name('department.update.show')->middleware('isAdmin');
     Route::put('/test_bank/departments/update/store', 'updateDepartment')->name('department.update')->middleware('isAdmin');
     Route::post('/test_bank/department/import/excel', 'import')->name('department.import.excel')->middleware('isAdmin');
+    Route::get('/test_bank/department/download/excel-format', 'downloadExcelFormat')->name('department.download.excel-format');
 });
 
 Route::controller(DivisionController::class)->group(function(){
