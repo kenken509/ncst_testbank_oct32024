@@ -1870,7 +1870,31 @@ const announcementMessage = async (announcements) => {
 // test modal
 const addQuestionModal2 = ref(false);
 const handleAddQuestionModal2 = ()=>{
-    addQuestionModal2.value = !addQuestionModal2.value
+    //addQuestionModal2.value = !addQuestionModal2.value
+    if(selectedSubjectCode.value === '')
+        {
+            selectedTermValidator.value = 'Subject Code is required.'
+            errorMessage2(selectedTermValidator.value)
+            return
+        }
+
+        if(selectedTerm.value.length < 1)
+        {
+            selectedTermValidator.value = 'Term is required.'
+            errorMessage2(selectedTermValidator.value)
+            return
+        }
+
+        if(selectedTerm.value.length === 1)
+        {
+            selectedTermValidator.value = ''
+            addQuestionModal2.value = true
+        }
+        else
+        {
+            selectedTermValidator.value = 'Multiple terms are not allowed.'
+            errorMessage2(selectedTermValidator.value)
+        }
 }
 
 // import question excel file logic ... end file
