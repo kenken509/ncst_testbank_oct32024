@@ -137,6 +137,10 @@
                         <button type="submit" class="w-full btn-primary" > Import </button>
                     </div>
                 </form>
+                <button :disabled="isDownloading" type="button" class="w-full btn-primary flex items-center justify-center gap-2" @click="downloadExcelFormat" >
+                    <i class="pi pi-arrow-circle-down"></i>
+                    Excel Format 
+                </button>
             </div>
             <ProgressSpinner v-if="isLoading"  class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2"  />
             
@@ -488,4 +492,28 @@ watch(importUserSelectedDepartment, (dep)=>{
  watch(importUserSelectedDivision,(div)=>{
     importExcelForm.division_id = div.id
  })
+
+ const isDownloading = ref(false);
+ const downloadExcelFormat = async()=>{
+    isDownloading.value = true;
+
+    try
+    {
+        const url = route('user.download.excel-format');
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'user_import_format.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    catch(error)
+    {
+        console.error('Download failed:', error);
+    }
+    finally
+    {
+        isDownloading.value = false;
+    }
+ }
 </script>

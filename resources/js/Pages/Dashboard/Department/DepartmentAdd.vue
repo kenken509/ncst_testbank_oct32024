@@ -180,7 +180,7 @@ const importConfirmation = ()=>
         });
     }  
 
-    const isDownloading = ref(false)
+const isDownloading = ref(false)
 const downloadExcelFormat = async () => {
      // Disable the button
     isDownloading.value = true;
@@ -200,6 +200,6 @@ const downloadExcelFormat = async () => {
         // Re-enable the button after the download process
         isDownloading.value = false;
     }
-    
+
 };
 </script>

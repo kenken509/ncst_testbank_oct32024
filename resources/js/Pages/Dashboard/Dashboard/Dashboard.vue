@@ -7,8 +7,8 @@
             
         </div>
         <div class="flex h-full w-full justify-center items-center mt-8"> 
-            <div class="w-full flex justify-between gap-2">
-                <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
+            <div class="w-full grid grid-cols-8 gap-2">
+                <div class="col-span-8 lg:col-span-2 w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
                     <div class="flex items-center gap-2">
                         <i class="pi pi-users"></i>
                         <span>Users</span>
@@ -17,34 +17,36 @@
                 </div>
                
                 
-                <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
+                <div class="col-span-8 lg:col-span-2 w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
                     <div class="flex items-center gap-2">
                         <i class="pi pi-users"></i>
                         <span>Department Heads</span>
                     </div>
                     <span class="text-[30px] font-semibold mt-4">{{ depHeadCount }}</span>
                 </div>
-                <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
+                <div class="col-span-8 lg:col-span-2 w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
                     <div class="flex items-center gap-2">
                         <i class="pi pi-users"></i>
                         <span>Faculties</span>
                     </div>
                     <span class="text-[30px] font-semibold mt-4">{{ facultyCount }}</span>
                 </div>
-                <div class="w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
+                <div class="col-span-8 lg:col-span-2 w-full flex flex-col  gap-2 border border-gray-500 rounded-md p-6 shadow-md bg-blue-100">
                     <div class="flex items-center gap-2">
                         <i class="pi pi-question-circle"></i>
-                        <span>Total No. of Questions</span>
+                        <span>Questions</span>
                     </div>
                     <span class="text-[30px] font-semibold mt-4">{{ questionsCount }}</span>
                 </div>
             </div>
         </div>
+
+        
         <!--users count-->
 
-        <div class="grid grid-cols-2 gap-2 w-full gap-2 justify-between ">
+        <div class="grid grid-cols-2 gap-2 w-full justify-between ">
             
-            <div class=" col-span-1  overflow-x-auto shadow-md sm:rounded-lg mt-10  border-gray-500 border  ">
+            <div class=" col-span-2 lg:col-span-1  overflow-x-auto shadow-md sm:rounded-lg mt-10  border-gray-500 border  ">
                 <div class="  flex justify-center border rounded-t-md bg-blue-900 border-gray-500 text-gray-800 w-full">
                     <span class="text-[20px] font-semibold text-white p-1">LOWEST CONTRIBUTIONS</span>
                 </div>
@@ -83,7 +85,7 @@
                     </table>
                 </div>
             </div>
-            <div class="mt-10 col-span-1 border-gray-300 w-full rounded-lg border border-1 border-gray-500 shadow-md">
+            <div class="mt-10 col-span-2 lg:col-span-1 border-gray-300 w-full rounded-lg border border-1 border-gray-500 shadow-md">
                     <div class="w-full flex justify-center bg-blue-900 py-2 border-b-[1px] border-gray-500 rounded-t-md">
                         <span class=" text-white font-bold ">
                             EMPTY SUBJECT CODES

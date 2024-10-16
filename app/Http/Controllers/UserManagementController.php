@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class UserManagementController extends Controller
 {
@@ -357,5 +358,22 @@ class UserManagementController extends Controller
 
             return redirect()->back()->with('error', 'Failed to import users.');
         }
+    }
+
+    public function downloadExcelFormat()
+    {
+        $filePath = '/excel_format/user_import_format.xlsx';
+
+        if (Storage::disk('public')->exists($filePath)) {
+            Log::info('download excel format successfully!!!');
+            return Storage::disk('public')->download($filePath);
+        }
+        else
+        {
+            Log::info('download excel format not exist!!!');
+        }
+        
+        
+        return abort(404); // Return 404 if the file doesn't exist
     }
 }
