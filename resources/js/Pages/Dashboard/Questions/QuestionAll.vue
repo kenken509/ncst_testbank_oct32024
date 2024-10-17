@@ -784,7 +784,7 @@
                         </div>
                         
                         <div>
-                            <button type="submit" class="w-full btn-primary">Import</button>
+                            <button type="submit" class="w-full btn-primary ">Import</button>
                            
                         </div>
                     </form>

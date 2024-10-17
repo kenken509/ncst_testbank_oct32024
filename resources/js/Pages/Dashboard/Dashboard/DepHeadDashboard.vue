@@ -114,7 +114,7 @@
                         </thead>
                        
                         <!-- {{data.emptySubjectCodes[0].divisions}} -->
-                        <tbody v-for="division in data.emptySubjectCodes[0].divisions" :key="division.id"  class="rounded-md">
+                        <tbody v-for="division in data.emptySubjectCodes[0].divisions" :key="division.id"  class="rounded-md"> 
                            
                             <tr  scope="row text" class=" ">
                                 <td scope="col" class="px-6 py-3 text-gray-800 border text-center">
@@ -138,10 +138,27 @@
             </div>
            
 
-            <Dialog v-model:visible="openCodesModal" modal header=" Empty Codes List"  :style="{ width: '20rem'}">
-                <div><hr></div>
+            <Dialog v-model:visible="openCodesModal" modal header=" "  :style="{ width: '30rem'}"> <!--working here before lunch-->
                 
-                <div v-for="(code, index) in selectedDepartmentCodeList[0].subject_codes" :key="index" class="mt-4">
+                <div class="">
+                    <div v-if="searching" class="mb-1">
+                        <span  class="text-xl font-bold ">Empty Code List</span>
+                    </div>
+                  
+                    <div class="flex  justify-between items-center mb-2">
+                        <span v-if="!searching" class="text-xl font-bold">Empty Code List</span>
+                        <i v-if="!searching" class="pi pi-search hover:cursor-pointer text-blue-500" @click=" handleSearchIconClicked"></i>
+                        
+                        
+                        <input v-model="searchData" v-if="searching" type="text" class=" mr-2 rounded-md flex-grow" placeholder="Search..." />
+                        <i v-if="searching" class="pi pi-times-circle hover:cursor-pointer text-red-400" @click="handleSearchIconClicked"></i>
+                        
+                    </div>
+                    
+                    <hr class="border-black">
+                </div>
+             
+                <div v-for="(code, index) in filteredData" :key="index" class="mt-4">
                     <span>{{ index+1 }} . &nbsp;</span>
                     <span>
                         {{ code.name }}
@@ -149,16 +166,34 @@
                 </div>
             </Dialog>
 
-            <Dialog v-model:visible="openCodesModalDivision" modal header=" Empty Codes List"  :style="{ width: '20rem'}">
-                <div><hr></div>
+            <!--with division-->
+            <Dialog v-model:visible="openCodesModalDivision" modal header=" "  :style="{ width: '30rem'}"> <!--working here-->
+                <div class="">
+                    <div v-if="searchingWithDiv" class="mb-1">
+                        <span  class="text-xl font-bold ">Empty Code List</span>
+                    </div>
+                  
+                    <div class="flex  justify-between items-center mb-2">
+                        <span  v-if="!searchingWithDiv" class="text-xl font-bold">Empty Code List</span>
+                        <i v-if="!searchingWithDiv" class="pi pi-search hover:cursor-pointer text-blue-500" @click="handleSeachIconClickedDiv"></i>
+                        
+                        
+                        <input v-model="searchDataWithDiv" v-if="searchingWithDiv" type="text" class=" mr-2 rounded-md flex-grow" placeholder="Search..." />
+                        <i v-if="searchingWithDiv" class="pi pi-times-circle hover:cursor-pointer text-red-400" @click="handleSeachIconClickedDiv"></i>
+                        
+                    </div>
+                    
+                    <hr class="border-black">
+                </div>
                 
-                <div v-for="(code, index) in selectedDivisionCodeList[0].div_subject_codes" :key="index" class="mt-4">
+                <div v-for="(code, index) in filteredDataWithDivision" :key="index" class="mt-4">
                     <span>{{ index+1 }} . &nbsp;</span>
                     <span>
                         {{ code.name }}
                     </span>
                 </div>
             </Dialog>
+             <!--with division-->
             <!-- <div class="w-full max-h-[500px] flex justify-center items-center border border-gray-500 mt-10 rounded-lg shadow-md">
                 <Pie :data="chartData" :options="chartOptions" class="p-2" />
             </div> -->
@@ -173,7 +208,7 @@
 import DashboardLayout from '../DashboardLayout.vue';
 import { Pie } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from 'chart.js'
-import {computed, ref} from 'vue'
+import {computed, ref, watch} from 'vue'
 import { usePage } from '@inertiajs/vue3';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
@@ -229,19 +264,64 @@ const chartOptions = computed(() => ({
 
 const openCodesModal = ref(false)
 const selectedDepartmentCodeList = ref([]);
+const filteredData = ref([])
+const searching = ref(false)
+const searchData = ref('')
 const handleOpenCodesModal = (id)=>{
     
     openCodesModal.value = !openCodesModal.value
     selectedDepartmentCodeList.value = data.emptySubjectCodes.filter((div)=> div.id === id);
-
+    filteredData.value = selectedDepartmentCodeList.value[0].subject_codes
     
 }
 
+const handleSearchIconClicked = ()=>{
+    searching.value = !searching.value
+}
+
+watch(searchData,(data)=>{
+    //console.log(data)
+    if(!searchData.value)
+    {
+        filteredData.value = selectedDepartmentCodeList.value[0].subject_codes
+    }
+    else
+    {
+        
+        filteredData.value = filteredData.value.filter((code) =>  code.name.toLowerCase().includes(data.toLocaleLowerCase()) ) 
+        
+    }
+})
+
 const selectedDivisionCodeList = ref([]);
 const openCodesModalDivision = ref(false)
+const filteredDataWithDivision = ref([])
+const searchingWithDiv = ref(false)
+const searchDataWithDiv = ref('')
 const handleOpenCodesModalWithDivision = (id)=>{
     openCodesModalDivision.value = !openCodesModalDivision.value
     
     selectedDivisionCodeList.value = data.emptySubjectCodes[0].divisions.filter((div) => div.id === id)
+    filteredDataWithDivision.value = selectedDivisionCodeList.value[0].div_subject_codes   
+    
 }
+
+const handleSeachIconClickedDiv = ()=>{
+    searchingWithDiv.value = !searchingWithDiv.value
+}
+
+watch(searchDataWithDiv, (data)=>{
+    
+    if(!searchDataWithDiv.value)
+    {
+        filteredDataWithDivision.value = selectedDivisionCodeList.value[0].div_subject_codes
+    }
+    else
+    {
+        filteredDataWithDivision.value = filteredDataWithDivision.value.filter((code)=> code.name.toLowerCase().includes(data.toLowerCase()))
+        
+    
+    }
+    
+})
 </script>

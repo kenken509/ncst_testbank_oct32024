@@ -100,8 +100,9 @@
                                 <th scope="col" class="px-6 py-3">View</th>
                             </tr>
                         </thead>
+                        
                         <tbody v-for="department in emptySubjectCodes" :key="department.id"  class="rounded-md">
-
+                            
                             <tr v-if="department.subject_codes.length" scope="row text" class=" ">
                                 <td scope="col" class="px-6 py-3 text-gray-800 border text-center">
                                     {{department.name}}
@@ -120,10 +121,27 @@
             </div>
            
 
-            <Dialog v-model:visible="openCodesModal" modal header=" Empty Codes List" title="Empty Codes List" :style="{ width: '20rem'}">
-                <div><hr></div>
+            <Dialog v-model:visible="openCodesModal" modal header=" " title="Empty Codes List" :style="{ width: '30rem'}">
                 
-                <div v-for="(code, index) in selectedDepartmentCodeList[0].subject_codes" :key="index" class="mt-4">
+                <div class="">
+                    <div v-if="searching" class="mb-1">
+                        <span  class="text-xl font-bold ">Empty Code List</span>
+                    </div>
+                    
+                    <div class="flex  justify-between items-center mb-2">
+                        <span  v-if="!searching" class="text-xl font-bold">Empty Code List</span>
+                        <i v-if="!searching" class="pi pi-search hover:cursor-pointer text-blue-500" @click="handleSeachIconClicked"></i>
+                        
+                        
+                        <input v-model="searchData" v-if="searching" type="text" class=" mr-2 rounded-md flex-grow" placeholder="Search..." />
+                        <i v-if="searching" class="pi pi-times-circle hover:cursor-pointer text-red-400" @click="handleSeachIconClicked"></i>
+                        
+                    </div>
+                    
+                    <hr class="border-black">
+                </div>
+             
+                <div  v-for="(code, index) in filteredData" :key="index" class="mt-4 border-b-2">
                     <span>{{ index+1 }} . &nbsp;</span>
                     <span>
                         {{ code.name }}
@@ -144,7 +162,7 @@
 import DashboardLayout from '../DashboardLayout.vue';
 import { Pie } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from 'chart.js'
-import {computed, ref} from 'vue'
+import {computed, ref, watch} from 'vue'
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale)
 
@@ -196,10 +214,35 @@ const chartOptions = computed(() => ({
 
 const openCodesModal = ref(false)
 const selectedDepartmentCodeList = ref([]);
+const emptyCodesAlphabetical = ref([])
+const filteredData = ref([])
+const searchData = ref('')
 const handleOpenCodesModal = (id)=>{
+    
     openCodesModal.value = !openCodesModal.value
     selectedDepartmentCodeList.value = data.emptySubjectCodes.filter((dep)=> dep.id === id);
-
-    //console.log(selectedDepartmentCodeList.value)
+    
+    filteredData.value = selectedDepartmentCodeList.value[0].subject_codes;
+    
 }
+
+const searching = ref(false);
+const handleSeachIconClicked = ()=>{
+    searching.value = !searching.value
+}
+
+
+
+watch(searchData, (data)=>{ 
+
+     if(!searchData.value)
+     {
+        filteredData.value = selectedDepartmentCodeList.value[0].subject_codes;
+     }   
+     else
+     {
+        filteredData.value = filteredData.value.filter((code)=> code.name.toLowerCase().includes(data.toLocaleLowerCase()))
+     }
+ 
+})
 </script>
