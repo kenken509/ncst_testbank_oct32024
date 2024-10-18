@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+
 use Carbon\Carbon;
 use App\Models\Option;
 use App\Models\Question;
 use App\Models\ProblemSet;
+use App\Models\ActivityLog;
 use App\Models\SubjectCode;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
@@ -809,7 +811,7 @@ class QuestionController extends Controller
     }
     public function destroy($id)
     {
-        
+           
         $questionToDelete = Question::findOrFail($id);
         $randomNumber = rand(1,10000000);
         $time = now();
@@ -835,11 +837,20 @@ class QuestionController extends Controller
                 }
 
                 $questionToDelete->delete();
+                $successMessage = 'Successfully Deleted a Questions.';
+                //log the activity
+                $log = new ActivityLog();
+                $log->user_id           = Auth::user()->id;
+                $log->action            = 'Deleted a Question';
+                $log->status            = 'successful';
+                $log->status_message    = $successMessage;
+                $log->created_at        = now();
+                $log->save();
 
                 DB::commit();
 
                 return redirect()->route('questions.show')->with([
-                    'success'   => 'Successfully Deleted a Questions.',
+                    'success'   => $successMessage,
                     'action'    => 'reload'
                 ]);
             }catch(\Exception $e)

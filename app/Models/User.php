@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Question::class,'author_id','id');
     }
+
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class,'id');
+    }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LogsController;
 use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\QuestionController;
@@ -145,6 +146,10 @@ Route::controller(ResetPasswordController::class)->group(function(){
 
 Route::controller(DefaultPasswordController::class)->group(function(){
     Route::post('user/default-password/update', 'updateDefaultPassword')->name('default.password.update');
+});
+
+Route::controller(LogsController::class)->group(function(){
+    Route::get('test_bank/logs/all', 'show')->name('logs.all');
 });
 
 

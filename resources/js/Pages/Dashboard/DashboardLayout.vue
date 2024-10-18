@@ -437,6 +437,43 @@
                 </div>
                 <!--back up-->
 
+                <!--Logs-->
+                <div v-if="user.id === 1">
+                    <div class="flex items-center py-3 pl-3 space-x-2 hover:bg-blue-900" >
+                        <i class="pi pi-pen-to-square"></i>
+
+                        <div class="w-full">
+                            <button  @click="toggleLogsMenu" class="flex w-full items-center justify-between pr-8 ">
+                               Logs 
+                                <svg v-if="showLogsMenu" class="w-6 h-6  text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                </svg>
+                                <svg v-else class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <ul 
+                    v-if="showLogsMenu"       
+                    >
+                        <Link href="">
+                            <li @click="toggleBackground('Log1')" :class="{'bg-blue-900':clickedItem === 'Log1'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                <i class="pi pi-pen-to-square"></i>
+                                <Link :href="route('logs.all')">User Activities</Link>
+                            </li>
+                        </Link>
+                        <!-- <Link href="">
+                            <li @click="toggleBackground('Log2')" :class="{'bg-blue-900':clickedItem === 'Log2'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                <i class="pi pi-upload"></i>
+                                <input type="file" ref="fileInput" @change="handleFileUpload"  class="hidden">
+                                <Link  :href="route('backup.restore.show')" >Upload</Link> 
+                            </li>
+                        </Link> -->
+                    </ul>
+                </div>
+                <!--Logs-->
+
                 <div class="border-b-2 border-gray-700 my-2">
                 
                 </div>   
@@ -637,6 +674,11 @@ const showBackUpMenu = ref(false)
 const toggleBackUpMenu = ()=>
 {
     showBackUpMenu.value = !showBackUpMenu.value
+}
+
+const showLogsMenu = ref(false)
+const toggleLogsMenu = ()=>{
+    showLogsMenu.value = !showLogsMenu.value
 }
 
 
