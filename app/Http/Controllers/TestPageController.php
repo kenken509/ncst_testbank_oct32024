@@ -9,7 +9,7 @@ class TestPageController extends Controller
     public function showTestPage()
     {
         $pcName = gethostname();
-        dd($pcName);
+        //dd($pcName);
         return inertia('TestPage/TestPage4');
     }
 
