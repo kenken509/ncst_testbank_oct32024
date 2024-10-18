@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('action');
+            $table->enum('action', ['create', 'update', 'delete', 'login']);
             $table->string('status');
             $table->string('status_message');
             $table->timestamps();

@@ -11,6 +11,7 @@ use App\Models\ActivityLog;
 use App\Models\SubjectCode;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
+use App\Models\DeletedDataInfo;
 use App\Exports\QuestionsExport;
 use App\Imports\QuestionsImport;
 use Illuminate\Support\Facades\DB;
@@ -813,40 +814,70 @@ class QuestionController extends Controller
     {
            
         $questionToDelete = Question::findOrFail($id);
+        
         $randomNumber = rand(1,10000000);
         $time = now();
         if($questionToDelete->type == 'text')
         {
             try{
                 DB::beginTransaction();
-
+                
                 $optionToDelete = $questionToDelete->options;
+                //dd($optionToDelete[1]->option);
+                
+
+                
+                $successMessage = 'Successfully Deleted a Questions.';
+                //log the activity
+                $log = new ActivityLog();
+                $log->user_id           = Auth::user()->id;
+                $log->action            = 'delete';
+                $log->status            = 'successful';
+                $log->status_message    = $successMessage;
+                $log->created_at        = now();
+                $log->save();
+
+                // deleted data info
+                $deleteInfoLog = new DeletedDataInfo();
+                $deleteInfoLog->activity_log_id         = $log->id;
+                $deleteInfoLog->info_type               = 'question';
+                $deleteInfoLog->question_type           = 'text';
+                $deleteInfoLog->question_id             = $questionToDelete->id;
+                $deleteInfoLog->question_question       = $questionToDelete->question;
+                $deleteInfoLog->option_a                = $optionToDelete[0]->option;
+                $deleteInfoLog->option_b                = $optionToDelete[1]->option;
+                $deleteInfoLog->option_c                = $optionToDelete[2]->option;
+                $deleteInfoLog->option_d                = $optionToDelete[3]->option;
+                $deleteInfoLog->question_term           = $questionToDelete->term;  
+                $deleteInfoLog->subject_code            = $questionToDelete->subjectCode->name;
+                $deleteInfoLog->question_author_email   = $questionToDelete->author->email;
+                $deleteInfoLog->question_created_at     = $questionToDelete->created_at;
+                $deleteInfoLog->question_updated_at     = $questionToDelete->updated_at;
 
                 foreach($optionToDelete as $option)
                 {
+                    if($option->isCorrect == 'true')
+                    {
+                        $deleteInfoLog->correct_answer = $option->option;
+                    }
+
                     $option->delete();
                 }
+
+               
 
                 if($questionToDelete->attached_image)
                 {
                     $attachedImagePath = 'public/images/'.$questionToDelete->attached_image;
                     if(Storage::exists($attachedImagePath))
                     {
-                         Storage::delete($attachedImagePath);
+                        $deleteInfoLog->question_attached_image = $attachedImagePath;
+                        Storage::delete($attachedImagePath);
                     }
                 }
 
+                $deleteInfoLog->save();
                 $questionToDelete->delete();
-                $successMessage = 'Successfully Deleted a Questions.';
-                //log the activity
-                $log = new ActivityLog();
-                $log->user_id           = Auth::user()->id;
-                $log->action            = 'Deleted a Question';
-                $log->status            = 'successful';
-                $log->status_message    = $successMessage;
-                $log->created_at        = now();
-                $log->save();
-
                 DB::commit();
 
                 return redirect()->route('questions.show')->with([
