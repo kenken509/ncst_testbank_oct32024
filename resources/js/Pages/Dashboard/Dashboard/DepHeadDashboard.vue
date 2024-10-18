@@ -198,9 +198,6 @@
                 <Pie :data="chartData" :options="chartOptions" class="p-2" />
             </div> -->
         </div>
-        
-
-        
     </DashboardLayout>
 </template>
 
